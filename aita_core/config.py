@@ -35,6 +35,10 @@ class CourseConfig:
     redirect_uri: str
     google_client_secret_file: str = ""
 
+    # Textbook (optional, for wikibook ingestion)
+    textbook_url: str = ""
+    textbook_chapter_to_week: dict = field(default_factory=dict)
+
     # LLM / embedding settings
     embedding_model: str = "text-embedding-3-large"
     embedding_dimensions: int = 3072

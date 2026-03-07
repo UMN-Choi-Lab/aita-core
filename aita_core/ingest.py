@@ -111,6 +111,87 @@ def load_tex(file_path, source_label, max_week=1):
     return [{"text": content, "metadata": {"source": file_path, "source_label": source_label, "max_week": max_week}}]
 
 
+def load_wikibook_page(url):
+    """Fetch a Wikibook page and extract clean text content."""
+    import urllib.request
+    from html.parser import HTMLParser
+
+    class _TextExtractor(HTMLParser):
+        def __init__(self):
+            super().__init__()
+            self.in_content = False
+            self.skip = False
+            self.text = []
+            self.skip_tags = {"script", "style", "sup", "nav"}
+
+        def handle_starttag(self, tag, attrs):
+            attrs_dict = dict(attrs)
+            if attrs_dict.get("id") == "mw-content-text":
+                self.in_content = True
+            if tag in self.skip_tags:
+                self.skip = True
+
+        def handle_endtag(self, tag):
+            if tag in self.skip_tags:
+                self.skip = False
+            if tag in ("p", "h2", "h3", "h4", "li"):
+                self.text.append("\n")
+
+        def handle_data(self, data):
+            if self.in_content and not self.skip:
+                self.text.append(data)
+
+    req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
+    with urllib.request.urlopen(req) as resp:
+        html = resp.read().decode("utf-8", errors="ignore")
+
+    parser = _TextExtractor()
+    parser.feed(html)
+    text = "".join(parser.text)
+    text = re.sub(r"\n{3,}", "\n\n", text)
+    text = re.sub(r"[ \t]+", " ", text)
+    return text.strip()
+
+
+def collect_wikibook(config):
+    """Collect chapters from a Wikibook URL.
+
+    Requires config to have:
+        textbook_url: str — base URL, e.g.
+            "https://en.wikibooks.org/wiki/Fundamentals_of_Transportation"
+        textbook_chapter_to_week: dict[str, int] — maps chapter slug to week,
+            e.g. {"Trip_Generation": 2, "Route_Choice": 4}
+    """
+    import urllib.request
+
+    url = getattr(config, "textbook_url", None)
+    chapter_to_week = getattr(config, "textbook_chapter_to_week", None)
+    if not url or not chapter_to_week:
+        print("  Skipping: textbook_url or textbook_chapter_to_week not set")
+        return []
+
+    docs = []
+    for chapter_slug, week in sorted(chapter_to_week.items(), key=lambda x: x[1]):
+        chapter_url = f"{url.rstrip('/')}/{chapter_slug}"
+        chapter_name = chapter_slug.replace("_", " ")
+        label = f"Textbook: {chapter_name}"
+        print(f"  Loading {label} (week {week})")
+        try:
+            text = load_wikibook_page(chapter_url)
+            if text:
+                docs.append({
+                    "text": text,
+                    "metadata": {
+                        "source": chapter_url,
+                        "source_label": label,
+                        "max_week": week,
+                    },
+                })
+        except Exception as e:
+            print(f"  Error fetching {chapter_url}: {e}")
+    return docs
+
+
 # ---------------------------------------------------------------------------
 # Chunking
 # ---------------------------------------------------------------------------
@@ -319,6 +400,8 @@ def run_ingestion(config, collectors=None):
             ("slide content", collect_slides),
             ("syllabus", collect_syllabus),
         ]
+        if getattr(config, "textbook_url", "") and getattr(config, "textbook_chapter_to_week", {}):
+            collectors.append(("textbook", collect_wikibook))
 
     total = len(collectors)
     print("=" * 60)
