@@ -10,7 +10,19 @@ AITA is an AI chatbot that helps students learn course material. It uses **Retri
 
 Key design principle: **the chatbot never gives direct answers**. It guides students through Socratic questioning, hints, and conceptual explanations.
 
+## Quick Start
+
+The fastest way to get started is to use the **[aita-template](https://github.com/UMN-Choi-Lab/aita-template)** repository:
+
+1. Go to [UMN-Choi-Lab/aita-template](https://github.com/UMN-Choi-Lab/aita-template)
+2. Click **"Use this template"** → **"Create a new repository"**
+3. Clone your new repo, then follow the README inside
+
+The template includes all the files you need (`config.py`, `main.py`, `add_document.py`, `Dockerfile`, etc.) with `TODO` markers for your course-specific data.
+
 ## Step-by-Step Setup Guide
+
+> **Tip:** If you used the template above, skip to Step 3 — Steps 1-2 are already done.
 
 ### Prerequisites
 
@@ -21,7 +33,7 @@ Key design principle: **the chatbot never gives direct answers**. It guides stud
 
 ### Step 1: Create Your Course Repository
 
-Create a new directory for your course:
+Use the **[aita-template](https://github.com/UMN-Choi-Lab/aita-template)** (recommended), or create from scratch:
 
 ```bash
 mkdir AITA_XXXX
@@ -38,12 +50,16 @@ pip install aita-core
 Or add to `requirements.txt`:
 
 ```
-aita-core>=0.1.0
+aita-core>=0.2.0
 ```
 
 ### Step 3: Set Up Environment Variables
 
-Create a `.env` file (never commit this):
+Copy `.env.example` to `.env` and fill in your values:
+
+```bash
+cp .env.example .env
+```
 
 ```bash
 OPENAI_API_KEY=sk-your-openai-api-key
