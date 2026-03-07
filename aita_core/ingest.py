@@ -1,23 +1,25 @@
 """
-Shared document ingestion utilities for AITA.
+Document ingestion utilities for AITA.
 
-Course-specific repos use these functions in their own add_document.py,
-providing their own collect_*() functions for course material layouts.
+Standard usage (default directory layout):
 
-Usage in a course repo's add_document.py:
-
-    from aita_core.ingest import (
-        get_week_for_filename, load_pdf, load_tex,
-        chunk_documents, get_embeddings, build_faiss_index, save_index,
-    )
     from config import CONFIG
+    from aita_core.ingest import run_ingestion
+    run_ingestion(CONFIG)
 
-    # Define your own collect_handouts(), collect_homework_questions(), etc.
-    # Then call the shared pipeline:
-    chunks = chunk_documents(all_docs)
-    embeddings = get_embeddings(chunks, CONFIG)
-    index = build_faiss_index(embeddings)
-    save_index(index, chunks, CONFIG.faiss_db_dir, CONFIG.docs_dir, CONFIG.backup_dir)
+Custom collectors (non-standard layout):
+
+    from config import CONFIG
+    from aita_core.ingest import run_ingestion
+
+    def my_collect_handouts(config):
+        ...
+        return docs
+
+    run_ingestion(CONFIG, collectors=[
+        ("handouts", my_collect_handouts),
+        ("homework", my_collect_homework),
+    ])
 """
 
 import os
@@ -201,11 +203,26 @@ def save_index(index, chunks, faiss_dir, docs_dir, backup_dir):
 
 
 # ---------------------------------------------------------------------------
-# Syllabus collector (common across courses)
+# Default collectors (standard directory layout)
 # ---------------------------------------------------------------------------
 
-def collect_syllabus(course_materials_dir):
-    """Load syllabus from standard location."""
+def _week_for(filename, config):
+    return get_week_for_filename(
+        filename, config.topic_num_to_week, config.hw_num_to_week,
+        config.lab_num_to_week, config.study_guide_to_week,
+    )
+
+
+def collect_syllabus(config_or_dir):
+    """Load syllabus from standard location.
+
+    Accepts either a CourseConfig or a course_materials_dir path
+    for backwards compatibility.
+    """
+    if isinstance(config_or_dir, str):
+        course_materials_dir = config_or_dir
+    else:
+        course_materials_dir = config_or_dir.course_materials_dir
     docs = []
     tex_path = os.path.join(course_materials_dir, "syllabus", "Syllabus.tex")
     pdf_path = os.path.join(course_materials_dir, "syllabus", "Syllabus.pdf")
@@ -216,3 +233,118 @@ def collect_syllabus(course_materials_dir):
         print("  Loading Syllabus (PDF, week 1)")
         docs.extend(load_pdf(pdf_path, "Syllabus", max_week=1))
     return docs
+
+
+def collect_handouts(config):
+    """Load handout PDFs from Handouts/Handouts/."""
+    docs = []
+    handouts_dir = os.path.join(config.course_materials_dir, "Handouts", "Handouts")
+    if not os.path.isdir(handouts_dir):
+        print(f"  Warning: {handouts_dir} not found")
+        return docs
+    for filename in sorted(os.listdir(handouts_dir)):
+        if not filename.endswith(".pdf"):
+            continue
+        file_path = os.path.join(handouts_dir, filename)
+        label = f"Handout: {filename}"
+        week = _week_for(filename, config)
+        print(f"  Loading {label} (week {week})")
+        docs.extend(load_pdf(file_path, label, max_week=week))
+    return docs
+
+
+def collect_homework(config):
+    """Load homework PDFs from Homework handouts/Homework handouts/, skipping solutions."""
+    docs = []
+    hw_dir = os.path.join(config.course_materials_dir, "Homework handouts", "Homework handouts")
+    if not os.path.isdir(hw_dir):
+        print(f"  Warning: {hw_dir} not found")
+        return docs
+    for filename in sorted(os.listdir(hw_dir)):
+        if not filename.endswith(".pdf"):
+            continue
+        if "solution" in filename.lower():
+            print(f"  Skipping (solution): {filename}")
+            continue
+        file_path = os.path.join(hw_dir, filename)
+        label = f"Homework: {filename}"
+        week = _week_for(filename, config)
+        print(f"  Loading {label} (week {week})")
+        docs.extend(load_pdf(file_path, label, max_week=week))
+    return docs
+
+
+def collect_slides(config):
+    """Load slide content from Slides/Slides/<topic>/ (content.tex or Notes.pdf)."""
+    docs = []
+    slides_dir = os.path.join(config.course_materials_dir, "Slides", "Slides")
+    if not os.path.isdir(slides_dir):
+        print(f"  Warning: {slides_dir} not found")
+        return docs
+    for topic_name in sorted(os.listdir(slides_dir)):
+        topic_path = os.path.join(slides_dir, topic_name)
+        if not os.path.isdir(topic_path):
+            continue
+        label = f"Slides: {topic_name}"
+        week = _week_for(topic_name, config)
+        content_tex = os.path.join(topic_path, "content.tex")
+        if os.path.exists(content_tex):
+            print(f"  Loading {label} (LaTeX, week {week})")
+            docs.extend(load_tex(content_tex, label, max_week=week))
+        else:
+            notes_pdf = os.path.join(topic_path, "Notes.pdf")
+            if os.path.exists(notes_pdf):
+                print(f"  Loading {label} (PDF, week {week})")
+                docs.extend(load_pdf(notes_pdf, label, max_week=week))
+    return docs
+
+
+# ---------------------------------------------------------------------------
+# Ingestion pipeline runner
+# ---------------------------------------------------------------------------
+
+def run_ingestion(config, collectors=None):
+    """Run the full document ingestion pipeline.
+
+    Args:
+        config: CourseConfig instance.
+        collectors: Optional list of (name, callable) pairs. Each callable
+            receives config and returns a list of docs. If None, uses
+            default collectors for the standard directory layout.
+    """
+    if collectors is None:
+        collectors = [
+            ("lecture handouts", collect_handouts),
+            ("homework questions", collect_homework),
+            ("slide content", collect_slides),
+            ("syllabus", collect_syllabus),
+        ]
+
+    total = len(collectors)
+    print("=" * 60)
+    print(f"AITA {config.course_id} Document Ingestion Pipeline")
+    print("=" * 60)
+
+    all_docs = []
+    for i, (name, collector_fn) in enumerate(collectors, 1):
+        print(f"\n[{i}/{total}] Collecting {name}...")
+        all_docs += collector_fn(config)
+
+    if not all_docs:
+        print("\nNo documents found. Check course_materials directory.")
+        return
+
+    print(f"\nTotal documents loaded: {len(all_docs)}")
+
+    chunks = chunk_documents(all_docs, config.chunk_size, config.chunk_overlap)
+    print(f"Total chunks after splitting: {len(chunks)}")
+
+    print(f"\nGenerating embeddings with {config.embedding_model}...")
+    texts = [c["text"] for c in chunks]
+    embeddings = get_embeddings(texts, config.embedding_model)
+
+    print("\nBuilding FAISS index...")
+    index = build_faiss_index(embeddings)
+    save_index(index, chunks, config.faiss_db_dir, config.docs_dir, config.backup_dir)
+
+    print("\nDone! Vector store is ready.")

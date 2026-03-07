@@ -53,16 +53,6 @@ GOOGLE_REDIRECT_URI=http://your-server:8501
 AITA_DATA_DIR=/app/data
 ```
 
-Create a `.env.example` for reference (safe to commit):
-
-```bash
-OPENAI_API_KEY=your-openai-api-key-here
-ADMIN_PASSWORD=your-admin-password-here
-GOOGLE_COOKIE_KEY=your-cookie-secret-here
-GOOGLE_REDIRECT_URI=http://localhost:8501
-AITA_DATA_DIR=/app/data
-```
-
 ### Step 4: Add Your Course Materials
 
 Create a `course_materials/` directory and organize your files:
@@ -227,125 +217,35 @@ run(CONFIG)
 
 ### Step 7: Create `add_document.py`
 
-This script ingests your course materials into the vector database. Adapt the `collect_*` functions to match your directory layout:
+If your course materials follow the standard directory layout (see Step 4), this is all you need:
 
 ```python
-import os
-from aita_core.ingest import (
-    get_week_for_filename, load_pdf, load_tex,
-    chunk_documents, get_embeddings, build_faiss_index, save_index,
-    collect_syllabus,
-)
 from config import CONFIG
-
-
-def _week_for(filename):
-    return get_week_for_filename(
-        filename, CONFIG.topic_num_to_week, CONFIG.hw_num_to_week,
-        CONFIG.lab_num_to_week, CONFIG.study_guide_to_week,
-    )
-
-
-def collect_handouts():
-    docs = []
-    handouts_dir = os.path.join(CONFIG.course_materials_dir, "Handouts", "Handouts")
-    if not os.path.isdir(handouts_dir):
-        print(f"  Warning: {handouts_dir} not found")
-        return docs
-    for filename in sorted(os.listdir(handouts_dir)):
-        if not filename.endswith(".pdf"):
-            continue
-        file_path = os.path.join(handouts_dir, filename)
-        label = f"Handout: {filename}"
-        week = _week_for(filename)
-        print(f"  Loading {label} (week {week})")
-        docs.extend(load_pdf(file_path, label, max_week=week))
-    return docs
-
-
-def collect_homework_questions():
-    docs = []
-    hw_dir = os.path.join(CONFIG.course_materials_dir, "Homework handouts", "Homework handouts")
-    if not os.path.isdir(hw_dir):
-        print(f"  Warning: {hw_dir} not found")
-        return docs
-    for filename in sorted(os.listdir(hw_dir)):
-        if not filename.endswith(".pdf"):
-            continue
-        if "solution" in filename.lower():
-            print(f"  Skipping (solution): {filename}")
-            continue
-        file_path = os.path.join(hw_dir, filename)
-        label = f"Homework: {filename}"
-        week = _week_for(filename)
-        print(f"  Loading {label} (week {week})")
-        docs.extend(load_pdf(file_path, label, max_week=week))
-    return docs
-
-
-def collect_slide_content():
-    docs = []
-    slides_dir = os.path.join(CONFIG.course_materials_dir, "Slides", "Slides")
-    if not os.path.isdir(slides_dir):
-        print(f"  Warning: {slides_dir} not found")
-        return docs
-    for topic_name in sorted(os.listdir(slides_dir)):
-        topic_path = os.path.join(slides_dir, topic_name)
-        if not os.path.isdir(topic_path):
-            continue
-        label = f"Slides: {topic_name}"
-        week = _week_for(topic_name)
-        content_tex = os.path.join(topic_path, "content.tex")
-        if os.path.exists(content_tex):
-            print(f"  Loading {label} (LaTeX, week {week})")
-            docs.extend(load_tex(content_tex, label, max_week=week))
-        else:
-            notes_pdf = os.path.join(topic_path, "Notes.pdf")
-            if os.path.exists(notes_pdf):
-                print(f"  Loading {label} (PDF, week {week})")
-                docs.extend(load_pdf(notes_pdf, label, max_week=week))
-    return docs
-
-
-def main():
-    print("=" * 60)
-    print("AITA Document Ingestion Pipeline")
-    print("=" * 60)
-
-    print("\n[1/4] Collecting lecture handouts...")
-    all_docs = collect_handouts()
-
-    print("\n[2/4] Collecting homework questions...")
-    all_docs += collect_homework_questions()
-
-    print("\n[3/4] Collecting slide content...")
-    all_docs += collect_slide_content()
-
-    print("\n[4/4] Collecting syllabus...")
-    all_docs += collect_syllabus(CONFIG.course_materials_dir)
-
-    if not all_docs:
-        print("\nNo documents found. Check course_materials directory.")
-        return
-
-    print(f"\nTotal documents loaded: {len(all_docs)}")
-
-    chunks = chunk_documents(all_docs, CONFIG.chunk_size, CONFIG.chunk_overlap)
-    print(f"Total chunks after splitting: {len(chunks)}")
-
-    print(f"\nGenerating embeddings with {CONFIG.embedding_model}...")
-    texts = [c["text"] for c in chunks]
-    embeddings = get_embeddings(texts, CONFIG.embedding_model)
-
-    print("\nBuilding FAISS index...")
-    index = build_faiss_index(embeddings)
-    save_index(index, chunks, CONFIG.faiss_db_dir, CONFIG.docs_dir, CONFIG.backup_dir)
-
-    print("\nDone! Vector store is ready.")
-
+from aita_core.ingest import run_ingestion
 
 if __name__ == "__main__":
-    main()
+    run_ingestion(CONFIG)
+```
+
+The default pipeline collects handouts, homework (skipping solutions), slides, and syllabus, then builds the FAISS vector index.
+
+If your directory layout differs, you can pass custom collectors:
+
+```python
+from config import CONFIG
+from aita_core.ingest import run_ingestion, load_pdf, collect_syllabus
+
+def my_collect_handouts(config):
+    # Custom logic to find and load handout PDFs
+    docs = []
+    # ... your code here ...
+    return docs
+
+if __name__ == "__main__":
+    run_ingestion(CONFIG, collectors=[
+        ("handouts", my_collect_handouts),
+        ("syllabus", collect_syllabus),
+    ])
 ```
 
 ### Step 8: Build the Vector Store
@@ -465,11 +365,10 @@ Using GPT-4o-mini (default), estimated cost is **under $20/semester** for a clas
 AITA_XXXX/
 ├── config.py              # CourseConfig with all course-specific data
 ├── main.py                # 3 lines: import config, import aita_core, run
-├── add_document.py        # Course-specific document collection + shared pipeline
+├── add_document.py        # 3 lines for standard layout, or custom collectors
 ├── course_materials/      # PDFs, LaTeX source (not committed)
 ├── faiss_db/              # Built vector index (not committed)
 ├── .env                   # API keys (not committed)
-├── .env.example           # Template for .env (safe to commit)
 ├── .gitignore
 ├── docker-compose.yml
 ├── Dockerfile
