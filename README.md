@@ -1,5 +1,7 @@
 # aita-core
 
+[![PyPI version](https://badge.fury.io/py/aita-core.svg)](https://pypi.org/project/aita-core/)
+
 Shared core package for **AI Teaching Assistant (AITA)** chatbots. Provides the Streamlit UI, RAG pipeline, database logging, admin panel, and document ingestion utilities — parameterized by a `CourseConfig` so the same codebase serves multiple courses.
 
 ## Installation
