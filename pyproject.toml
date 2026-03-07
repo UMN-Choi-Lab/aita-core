@@ -22,4 +22,4 @@ dependencies = [
 ]
 
 [project.urls]
-Repository = "https://github.com/umnCETransportation/aita-core"
+Repository = "https://github.com/UMN-Choi-Lab/aita-core"

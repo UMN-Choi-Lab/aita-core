@@ -5,7 +5,7 @@ Shared core package for **AI Teaching Assistant (AITA)** chatbots. Provides the 
 ## Installation
 
 ```bash
-pip install git+https://github.com/umnCETransportation/aita-core.git
+pip install aita-core
 ```
 
 ## Usage
