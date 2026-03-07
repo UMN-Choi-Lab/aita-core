@@ -49,7 +49,7 @@ Create a `.env` file (never commit this):
 OPENAI_API_KEY=sk-your-openai-api-key
 ADMIN_PASSWORD=your-admin-password
 GOOGLE_COOKIE_KEY=your-random-secret-string
-GOOGLE_REDIRECT_URI=http://your-server:30001
+GOOGLE_REDIRECT_URI=http://your-server:8501
 AITA_DATA_DIR=/app/data
 ```
 
@@ -59,7 +59,7 @@ Create a `.env.example` for reference (safe to commit):
 OPENAI_API_KEY=your-openai-api-key-here
 ADMIN_PASSWORD=your-admin-password-here
 GOOGLE_COOKIE_KEY=your-cookie-secret-here
-GOOGLE_REDIRECT_URI=http://localhost:30001
+GOOGLE_REDIRECT_URI=http://localhost:8501
 AITA_DATA_DIR=/app/data
 ```
 
@@ -211,7 +211,7 @@ CONFIG = CourseConfig(
     admin_password=os.getenv("ADMIN_PASSWORD", ""),
     cookie_name="aita_XXXX_auth",
     cookie_key=_google_cookie_key or "",
-    redirect_uri=_google_redirect_uri or "http://localhost:30001",
+    redirect_uri=_google_redirect_uri or "http://localhost:8501",
     google_client_secret_file=_google_client_secret,
 )
 ```
@@ -396,7 +396,7 @@ services:
   aita:
     build: .
     ports:
-      - "30001:8501"
+      - "8501:8501"
     env_file:
       - .env
     volumes:
@@ -411,7 +411,7 @@ docker compose build
 docker compose up -d
 ```
 
-Your chatbot is now live at `http://your-server:30001`.
+Your chatbot is now live at `http://your-server:8501`.
 
 ### Step 11: Set Up `.gitignore`
 
@@ -439,7 +439,7 @@ To restrict login to `@umn.edu` accounts:
 1. Create a project in [Google Cloud Console](https://console.cloud.google.com/)
 2. Enable the **Google+ API** (or People API)
 3. Create OAuth 2.0 credentials (Web application)
-4. Add your redirect URI (e.g., `http://your-server:30001`)
+4. Add your redirect URI (e.g., `http://your-server:8501`)
 5. Download the client secret JSON and place it in your project root as `client_secret_*.json`
 6. Set `GOOGLE_COOKIE_KEY` and `GOOGLE_REDIRECT_URI` in your `.env`
 
