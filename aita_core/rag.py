@@ -133,6 +133,45 @@ def build_messages(chat_history, user_query, context_chunks, current_week):
     return messages
 
 
+def _inject_current_hw(query, context_chunks, current_week):
+    """If the query mentions homework, ensure the current HW is in retrieved chunks."""
+    _load_index()
+    cfg = get_config()
+    hw_keywords = ["homework", "hw", "assignment", "this week's hw", "current hw"]
+    if not any(kw in query.lower() for kw in hw_keywords):
+        return context_chunks
+
+    week_to_hw = cfg.week_to_hw
+    current_hw = week_to_hw.get(current_week)
+    if not current_hw:
+        for w in range(current_week, 0, -1):
+            if w in week_to_hw:
+                current_hw = week_to_hw[w]
+                break
+    if not current_hw:
+        return context_chunks
+
+    # Check if current HW is already in results
+    hw_label = f"Homework: {current_hw}.pdf"
+    if any(hw_label in c.get("source", "") for c in context_chunks):
+        return context_chunks
+
+    # Find and inject the first chunk from the current HW
+    for i, chunk in enumerate(_chunks):
+        label = chunk["metadata"].get("source_label", "")
+        if current_hw in label and "Homework" in label:
+            chunk_week = chunk["metadata"].get("max_week", 1)
+            if chunk_week <= current_week:
+                context_chunks.insert(0, {
+                    "text": chunk["text"],
+                    "source": label,
+                    "file_path": chunk["metadata"].get("source", ""),
+                    "score": 1.0,
+                })
+                break
+    return context_chunks
+
+
 def chat(user_query, chat_history=None, current_week=15):
     """
     Full RAG pipeline: retrieve context, build prompt, generate response.
@@ -144,6 +183,7 @@ def chat(user_query, chat_history=None, current_week=15):
         chat_history = []
 
     context_chunks = retrieve(user_query, current_week=current_week)
+    context_chunks = _inject_current_hw(user_query, context_chunks, current_week)
 
     seen = set()
     sources = []

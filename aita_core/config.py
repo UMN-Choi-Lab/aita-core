@@ -1,4 +1,23 @@
 from dataclasses import dataclass, field
+import json
+import os
+
+
+INT_KEY_DICT_FIELDS = frozenset({
+    "week_topics", "topic_num_to_week", "hw_num_to_week",
+    "lab_num_to_week", "example_prompts",
+})
+
+EDITABLE_FIELDS = [
+    "course_name", "course_short_name", "course_description",
+    "system_prompt",
+    "week_topics", "topic_num_to_week", "hw_num_to_week",
+    "lab_num_to_week", "study_guide_to_week",
+    "example_prompts",
+    "textbook_url", "textbook_chapter_to_week",
+    "llm_model", "llm_temperature", "retrieval_k",
+    "chunk_size", "chunk_overlap", "embedding_model",
+]
 
 
 @dataclass
@@ -76,6 +95,38 @@ class CourseConfig:
                     all_topics.append(topic)
         return [t for t in all_topics if t not in covered]
 
+    def _overrides_path(self) -> str:
+        return os.path.join(self.data_dir, "config_overrides.json")
+
+    def load_overrides(self):
+        """Load saved config overrides from JSON file in data_dir."""
+        path = self._overrides_path()
+        if not os.path.isfile(path):
+            return
+        with open(path) as f:
+            overrides = json.load(f)
+        for key, value in overrides.items():
+            if hasattr(self, key) and key in EDITABLE_FIELDS:
+                if key in INT_KEY_DICT_FIELDS and isinstance(value, dict):
+                    value = {int(k): v for k, v in value.items()}
+                setattr(self, key, value)
+
+    def save_overrides(self, overrides: dict):
+        """Save config overrides to JSON file and apply them in-memory."""
+        for key, value in overrides.items():
+            if hasattr(self, key) and key in EDITABLE_FIELDS:
+                setattr(self, key, value)
+        serializable = {}
+        for key, value in overrides.items():
+            if key in INT_KEY_DICT_FIELDS and isinstance(value, dict):
+                serializable[key] = {str(k): v for k, v in value.items()}
+            else:
+                serializable[key] = value
+        path = self._overrides_path()
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        with open(path, "w") as f:
+            json.dump(serializable, f, indent=2)
+
 
 _config: CourseConfig | None = None
 
@@ -83,6 +134,7 @@ _config: CourseConfig | None = None
 def set_config(config: CourseConfig):
     global _config
     _config = config
+    _config.load_overrides()
 
 
 def get_config() -> CourseConfig:

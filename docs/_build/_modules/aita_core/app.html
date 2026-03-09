@@ -1,0 +1,781 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>aita_core.app &mdash; aita-core 0.4.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=6c02275b"></script>
+      <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            aita-core
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting-started.html">Getting Started</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../getting-started.html#prerequisites">Prerequisites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../getting-started.html#using-the-template-recommended">Using the Template (Recommended)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../getting-started.html#manual-setup">Manual Setup</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../getting-started.html#step-1-create-your-course-repository">Step 1: Create Your Course Repository</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../getting-started.html#step-2-install-aita-core">Step 2: Install aita-core</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../getting-started.html#step-3-set-up-environment-variables">Step 3: Set Up Environment Variables</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../getting-started.html#step-4-add-course-materials">Step 4: Add Course Materials</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../getting-started.html#step-5-create-config-py">Step 5: Create <code class="docutils literal notranslate"><span class="pre">config.py</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../getting-started.html#step-6-create-main-py">Step 6: Create <code class="docutils literal notranslate"><span class="pre">main.py</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../getting-started.html#step-7-create-add-document-py">Step 7: Create <code class="docutils literal notranslate"><span class="pre">add_document.py</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../getting-started.html#step-8-build-the-vector-store">Step 8: Build the Vector Store</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../getting-started.html#step-9-test-locally">Step 9: Test Locally</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../getting-started.html#step-10-deploy">Step 10: Deploy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../getting-started.html#recommended-gitignore">Recommended <code class="docutils literal notranslate"><span class="pre">.gitignore</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../configuration.html">Configuration</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../configuration.html#field-reference">Field Reference</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../configuration.html#course-identity">Course Identity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../configuration.html#week-topic-mappings">Week &amp; Topic Mappings</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../configuration.html#textbook-optional">Textbook (Optional)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../configuration.html#paths">Paths</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../configuration.html#authentication">Authentication</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../configuration.html#llm-embedding-settings">LLM &amp; Embedding Settings</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../configuration.html#config-overrides-admin-panel">Config Overrides (Admin Panel)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../configuration.html#computed-properties">Computed Properties</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../deployment.html">Deployment</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../deployment.html#dockerfile">Dockerfile</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../deployment.html#docker-compose-yml">docker-compose.yml</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../deployment.html#build-and-run">Build and Run</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../deployment.html#custom-port">Custom Port</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../deployment.html#data-persistence">Data Persistence</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../deployment.html#updating-aita-core">Updating aita-core</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../deployment.html#cost-estimate">Cost Estimate</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../google-oauth.html">Google OAuth Setup</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../google-oauth.html#setup-steps">Setup Steps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../google-oauth.html#how-it-works">How It Works</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../google-oauth.html#domain-restriction">Domain Restriction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../google-oauth.html#troubleshooting">Troubleshooting</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Architecture</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../architecture.html">Architecture</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../architecture.html#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../architecture.html#request-flow">Request Flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../architecture.html#week-aware-filtering">Week-Aware Filtering</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../architecture.html#document-ingestion-pipeline">Document Ingestion Pipeline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../architecture.html#module-dependency-graph">Module Dependency Graph</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">Module Overview</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/config.html"><code class="docutils literal notranslate"><span class="pre">aita_core.config</span></code> — Configuration</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../api/config.html#aita_core.config.CourseConfig"><code class="docutils literal notranslate"><span class="pre">CourseConfig</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../api/config.html#aita_core.config.CourseConfig.course_id"><code class="docutils literal notranslate"><span class="pre">CourseConfig.course_id</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/config.html#aita_core.config.CourseConfig.course_name"><code class="docutils literal notranslate"><span class="pre">CourseConfig.course_name</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/config.html#aita_core.config.CourseConfig.course_short_name"><code class="docutils literal notranslate"><span class="pre">CourseConfig.course_short_name</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/config.html#aita_core.config.CourseConfig.course_description"><code class="docutils literal notranslate"><span class="pre">CourseConfig.course_description</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/config.html#aita_core.config.CourseConfig.system_prompt"><code class="docutils literal notranslate"><span class="pre">CourseConfig.system_prompt</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/config.html#aita_core.config.CourseConfig.week_topics"><code class="docutils literal notranslate"><span class="pre">CourseConfig.week_topics</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/config.html#aita_core.config.CourseConfig.topic_num_to_week"><code class="docutils literal notranslate"><span class="pre">CourseConfig.topic_num_to_week</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/config.html#aita_core.config.CourseConfig.hw_num_to_week"><code class="docutils literal notranslate"><span class="pre">CourseConfig.hw_num_to_week</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/config.html#aita_core.config.CourseConfig.lab_num_to_week"><code class="docutils literal notranslate"><span class="pre">CourseConfig.lab_num_to_week</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/config.html#aita_core.config.CourseConfig.study_guide_to_week"><code class="docutils literal notranslate"><span class="pre">CourseConfig.study_guide_to_week</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/config.html#aita_core.config.CourseConfig.example_prompts"><code class="docutils literal notranslate"><span class="pre">CourseConfig.example_prompts</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/config.html#aita_core.config.CourseConfig.base_dir"><code class="docutils literal notranslate"><span class="pre">CourseConfig.base_dir</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/config.html#aita_core.config.CourseConfig.course_materials_dir"><code class="docutils literal notranslate"><span class="pre">CourseConfig.course_materials_dir</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/config.html#aita_core.config.CourseConfig.faiss_db_dir"><code class="docutils literal notranslate"><span class="pre">CourseConfig.faiss_db_dir</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/config.html#aita_core.config.CourseConfig.docs_dir"><code class="docutils literal notranslate"><span class="pre">CourseConfig.docs_dir</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/config.html#aita_core.config.CourseConfig.backup_dir"><code class="docutils literal notranslate"><span class="pre">CourseConfig.backup_dir</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/config.html#aita_core.config.CourseConfig.data_dir"><code class="docutils literal notranslate"><span class="pre">CourseConfig.data_dir</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/config.html#aita_core.config.CourseConfig.admin_password"><code class="docutils literal notranslate"><span class="pre">CourseConfig.admin_password</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/config.html#aita_core.config.CourseConfig.cookie_name"><code class="docutils literal notranslate"><span class="pre">CourseConfig.cookie_name</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/config.html#aita_core.config.CourseConfig.cookie_key"><code class="docutils literal notranslate"><span class="pre">CourseConfig.cookie_key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/config.html#aita_core.config.CourseConfig.redirect_uri"><code class="docutils literal notranslate"><span class="pre">CourseConfig.redirect_uri</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/config.html#aita_core.config.CourseConfig.google_client_secret_file"><code class="docutils literal notranslate"><span class="pre">CourseConfig.google_client_secret_file</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/config.html#aita_core.config.CourseConfig.textbook_url"><code class="docutils literal notranslate"><span class="pre">CourseConfig.textbook_url</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/config.html#aita_core.config.CourseConfig.textbook_chapter_to_week"><code class="docutils literal notranslate"><span class="pre">CourseConfig.textbook_chapter_to_week</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/config.html#aita_core.config.CourseConfig.embedding_model"><code class="docutils literal notranslate"><span class="pre">CourseConfig.embedding_model</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/config.html#aita_core.config.CourseConfig.embedding_dimensions"><code class="docutils literal notranslate"><span class="pre">CourseConfig.embedding_dimensions</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/config.html#aita_core.config.CourseConfig.llm_model"><code class="docutils literal notranslate"><span class="pre">CourseConfig.llm_model</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/config.html#aita_core.config.CourseConfig.llm_temperature"><code class="docutils literal notranslate"><span class="pre">CourseConfig.llm_temperature</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/config.html#aita_core.config.CourseConfig.chunk_size"><code class="docutils literal notranslate"><span class="pre">CourseConfig.chunk_size</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/config.html#aita_core.config.CourseConfig.chunk_overlap"><code class="docutils literal notranslate"><span class="pre">CourseConfig.chunk_overlap</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/config.html#aita_core.config.CourseConfig.retrieval_k"><code class="docutils literal notranslate"><span class="pre">CourseConfig.retrieval_k</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/config.html#aita_core.config.CourseConfig.google_auth_enabled"><code class="docutils literal notranslate"><span class="pre">CourseConfig.google_auth_enabled</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/config.html#aita_core.config.CourseConfig.week_to_hw"><code class="docutils literal notranslate"><span class="pre">CourseConfig.week_to_hw</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/config.html#aita_core.config.CourseConfig.get_topics_covered"><code class="docutils literal notranslate"><span class="pre">CourseConfig.get_topics_covered()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/config.html#aita_core.config.CourseConfig.get_topics_not_covered"><code class="docutils literal notranslate"><span class="pre">CourseConfig.get_topics_not_covered()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/config.html#aita_core.config.CourseConfig.load_overrides"><code class="docutils literal notranslate"><span class="pre">CourseConfig.load_overrides()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/config.html#aita_core.config.CourseConfig.save_overrides"><code class="docutils literal notranslate"><span class="pre">CourseConfig.save_overrides()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/config.html#aita_core.config.set_config"><code class="docutils literal notranslate"><span class="pre">set_config()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/config.html#aita_core.config.get_config"><code class="docutils literal notranslate"><span class="pre">get_config()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/config.html#constants">Constants</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../api/config.html#aita_core.config.INT_KEY_DICT_FIELDS"><code class="docutils literal notranslate"><span class="pre">INT_KEY_DICT_FIELDS</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/config.html#aita_core.config.EDITABLE_FIELDS"><code class="docutils literal notranslate"><span class="pre">EDITABLE_FIELDS</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/app.html"><code class="docutils literal notranslate"><span class="pre">aita_core.app</span></code> — Streamlit Application</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../api/app.html#entry-point">Entry Point</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../api/app.html#aita_core.app.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/app.html#pages">Pages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../api/app.html#aita_core.app.login_page"><code class="docutils literal notranslate"><span class="pre">login_page()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/app.html#aita_core.app.chat_page"><code class="docutils literal notranslate"><span class="pre">chat_page()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/app.html#authentication-helpers">Authentication Helpers</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../api/app.html#aita_core.app.resolve_file_path"><code class="docutils literal notranslate"><span class="pre">resolve_file_path()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/app.html#chat-page-features">Chat Page Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/app.html#sidebar-widgets">Sidebar Widgets</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/rag.html"><code class="docutils literal notranslate"><span class="pre">aita_core.rag</span></code> — RAG Pipeline</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../api/rag.html#pipeline-functions">Pipeline Functions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../api/rag.html#aita_core.rag.chat"><code class="docutils literal notranslate"><span class="pre">chat()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/rag.html#aita_core.rag.retrieve"><code class="docutils literal notranslate"><span class="pre">retrieve()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/rag.html#aita_core.rag.build_messages"><code class="docutils literal notranslate"><span class="pre">build_messages()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/rag.html#aita_core.rag.build_system_prompt"><code class="docutils literal notranslate"><span class="pre">build_system_prompt()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/rag.html#homework-injection">Homework Injection</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../api/rag.html#aita_core.rag._inject_current_hw"><code class="docutils literal notranslate"><span class="pre">_inject_current_hw()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/rag.html#week-aware-system-prompt">Week-Aware System Prompt</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../api/rag.html#aita_core.rag.FUTURE_TOPIC_INSTRUCTION"><code class="docutils literal notranslate"><span class="pre">FUTURE_TOPIC_INSTRUCTION</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/rag.html#internal-functions">Internal Functions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../api/rag.html#aita_core.rag._get_client"><code class="docutils literal notranslate"><span class="pre">_get_client()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/rag.html#aita_core.rag._load_index"><code class="docutils literal notranslate"><span class="pre">_load_index()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/ingest.html"><code class="docutils literal notranslate"><span class="pre">aita_core.ingest</span></code> — Document Ingestion</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../api/ingest.html#pipeline-runner">Pipeline Runner</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../api/ingest.html#aita_core.ingest.run_ingestion"><code class="docutils literal notranslate"><span class="pre">run_ingestion()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/ingest.html#default-collectors">Default Collectors</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../api/ingest.html#aita_core.ingest.collect_handouts"><code class="docutils literal notranslate"><span class="pre">collect_handouts()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/ingest.html#aita_core.ingest.collect_homework"><code class="docutils literal notranslate"><span class="pre">collect_homework()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/ingest.html#aita_core.ingest.collect_slides"><code class="docutils literal notranslate"><span class="pre">collect_slides()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/ingest.html#aita_core.ingest.collect_syllabus"><code class="docutils literal notranslate"><span class="pre">collect_syllabus()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/ingest.html#aita_core.ingest.collect_wikibook"><code class="docutils literal notranslate"><span class="pre">collect_wikibook()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/ingest.html#document-loaders">Document Loaders</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../api/ingest.html#aita_core.ingest.load_pdf"><code class="docutils literal notranslate"><span class="pre">load_pdf()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/ingest.html#aita_core.ingest.load_tex"><code class="docutils literal notranslate"><span class="pre">load_tex()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/ingest.html#aita_core.ingest.load_wikibook_page"><code class="docutils literal notranslate"><span class="pre">load_wikibook_page()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/ingest.html#aita_core.ingest.clean_pdf_text"><code class="docutils literal notranslate"><span class="pre">clean_pdf_text()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/ingest.html#text-chunking">Text Chunking</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../api/ingest.html#aita_core.ingest.chunk_documents"><code class="docutils literal notranslate"><span class="pre">chunk_documents()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/ingest.html#aita_core.ingest.chunk_text"><code class="docutils literal notranslate"><span class="pre">chunk_text()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/ingest.html#embedding-indexing">Embedding &amp; Indexing</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../api/ingest.html#aita_core.ingest.get_embeddings"><code class="docutils literal notranslate"><span class="pre">get_embeddings()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/ingest.html#aita_core.ingest.build_faiss_index"><code class="docutils literal notranslate"><span class="pre">build_faiss_index()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/ingest.html#aita_core.ingest.save_index"><code class="docutils literal notranslate"><span class="pre">save_index()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/ingest.html#week-assignment">Week Assignment</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../api/ingest.html#aita_core.ingest.get_week_for_filename"><code class="docutils literal notranslate"><span class="pre">get_week_for_filename()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/ingest.html#custom-collectors">Custom Collectors</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/db.html"><code class="docutils literal notranslate"><span class="pre">aita_core.db</span></code> — Database</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../api/db.html#connection">Connection</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../api/db.html#aita_core.db.get_conn"><code class="docutils literal notranslate"><span class="pre">get_conn()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/db.html#interactions">Interactions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../api/db.html#aita_core.db.log_interaction"><code class="docutils literal notranslate"><span class="pre">log_interaction()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/db.html#aita_core.db.get_interactions"><code class="docutils literal notranslate"><span class="pre">get_interactions()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/db.html#aita_core.db.count_interactions"><code class="docutils literal notranslate"><span class="pre">count_interactions()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/db.html#aita_core.db.rate_interaction"><code class="docutils literal notranslate"><span class="pre">rate_interaction()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/db.html#feedback">Feedback</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../api/db.html#aita_core.db.add_feedback"><code class="docutils literal notranslate"><span class="pre">add_feedback()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/db.html#aita_core.db.get_feedback"><code class="docutils literal notranslate"><span class="pre">get_feedback()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/db.html#feature-requests">Feature Requests</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../api/db.html#aita_core.db.add_feature_request"><code class="docutils literal notranslate"><span class="pre">add_feature_request()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/db.html#aita_core.db.get_feature_requests"><code class="docutils literal notranslate"><span class="pre">get_feature_requests()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/db.html#aita_core.db.update_feature_request_status"><code class="docutils literal notranslate"><span class="pre">update_feature_request_status()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/db.html#analytics">Analytics</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../api/db.html#aita_core.db.get_interaction_stats"><code class="docutils literal notranslate"><span class="pre">get_interaction_stats()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/db.html#database-schema">Database Schema</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/admin.html"><code class="docutils literal notranslate"><span class="pre">aita_core.admin</span></code> — Admin Dashboard</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../api/admin.html#entry-point">Entry Point</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../api/admin.html#aita_core.admin.admin_page"><code class="docutils literal notranslate"><span class="pre">admin_page()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/admin.html#aita_core.admin.admin_dashboard"><code class="docutils literal notranslate"><span class="pre">admin_dashboard()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/admin.html#authentication">Authentication</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../api/admin.html#aita_core.admin.check_admin_auth"><code class="docutils literal notranslate"><span class="pre">check_admin_auth()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/admin.html#aita_core.admin.admin_login"><code class="docutils literal notranslate"><span class="pre">admin_login()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/admin.html#course-settings">Course Settings</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../api/admin.html#aita_core.admin.admin_settings"><code class="docutils literal notranslate"><span class="pre">admin_settings()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/admin.html#dashboard-tabs">Dashboard Tabs</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/utils.html"><code class="docutils literal notranslate"><span class="pre">aita_core.utils</span></code> — Utilities</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../api/utils.html#aita_core.utils.save_docs_to_jsonl"><code class="docutils literal notranslate"><span class="pre">save_docs_to_jsonl()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/utils.html#aita_core.utils.load_docs_from_jsonl"><code class="docutils literal notranslate"><span class="pre">load_docs_from_jsonl()</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">aita-core</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">aita_core.app</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for aita_core.app</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">AITA Streamlit chat application.</span>
+<span class="sd">Parameterized by CourseConfig — no course-specific strings hardcoded.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">jwt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">streamlit</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">st</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">streamlit.components.v1</span><span class="w"> </span><span class="kn">import</span> <span class="n">html</span> <span class="k">as</span> <span class="n">_st_html</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">aita_core.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_config</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">aita_core.rag</span><span class="w"> </span><span class="kn">import</span> <span class="n">chat</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">aita_core.db</span><span class="w"> </span><span class="kn">import</span> <span class="n">log_interaction</span><span class="p">,</span> <span class="n">add_feedback</span><span class="p">,</span> <span class="n">add_feature_request</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">aita_core.admin</span><span class="w"> </span><span class="kn">import</span> <span class="n">admin_page</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_set_auth_cookie</span><span class="p">(</span><span class="n">user_data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+    <span class="n">cfg</span> <span class="o">=</span> <span class="n">get_config</span><span class="p">()</span>
+    <span class="n">token</span> <span class="o">=</span> <span class="n">jwt</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">user_data</span><span class="p">,</span> <span class="n">cfg</span><span class="o">.</span><span class="n">cookie_key</span><span class="p">,</span> <span class="n">algorithm</span><span class="o">=</span><span class="s2">&quot;HS256&quot;</span><span class="p">)</span>
+    <span class="n">_st_html</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s1">&#39;&lt;script&gt;document.cookie=&quot;</span><span class="si">{</span><span class="n">cfg</span><span class="o">.</span><span class="n">cookie_name</span><span class="si">}</span><span class="s1">=</span><span class="si">{</span><span class="n">token</span><span class="si">}</span><span class="s1">; path=/; max-age=</span><span class="si">{</span><span class="mi">30</span><span class="o">*</span><span class="mi">24</span><span class="o">*</span><span class="mi">3600</span><span class="si">}</span><span class="s1">; SameSite=Lax&quot;;&lt;/script&gt;&#39;</span><span class="p">,</span>
+        <span class="n">height</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_auth_cookie</span><span class="p">():</span>
+    <span class="n">cfg</span> <span class="o">=</span> <span class="n">get_config</span><span class="p">()</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">token</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">cookies</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">cookie_name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">token</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">jwt</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="n">cfg</span><span class="o">.</span><span class="n">cookie_key</span><span class="p">,</span> <span class="n">algorithms</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;HS256&quot;</span><span class="p">])</span>
+    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+        <span class="k">pass</span>
+    <span class="k">return</span> <span class="kc">None</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_delete_auth_cookie</span><span class="p">():</span>
+    <span class="n">cfg</span> <span class="o">=</span> <span class="n">get_config</span><span class="p">()</span>
+    <span class="n">_st_html</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s1">&#39;&lt;script&gt;document.cookie=&quot;</span><span class="si">{</span><span class="n">cfg</span><span class="o">.</span><span class="n">cookie_name</span><span class="si">}</span><span class="s1">=; path=/; max-age=0&quot;;&lt;/script&gt;&#39;</span><span class="p">,</span>
+        <span class="n">height</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="p">)</span>
+
+
+<div class="viewcode-block" id="resolve_file_path">
+<a class="viewcode-back" href="../../api/app.html#aita_core.app.resolve_file_path">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">resolve_file_path</span><span class="p">(</span><span class="n">stored_path</span><span class="p">):</span>
+    <span class="n">cfg</span> <span class="o">=</span> <span class="n">get_config</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">stored_path</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">stored_path</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">stored_path</span>
+    <span class="n">marker</span> <span class="o">=</span> <span class="s2">&quot;course_materials/&quot;</span>
+    <span class="n">idx</span> <span class="o">=</span> <span class="n">stored_path</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">marker</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">idx</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+        <span class="n">relative</span> <span class="o">=</span> <span class="n">stored_path</span><span class="p">[</span><span class="n">idx</span><span class="p">:]</span>
+        <span class="n">candidate</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">base_dir</span><span class="p">,</span> <span class="n">relative</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">candidate</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">candidate</span>
+    <span class="k">return</span> <span class="kc">None</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_google_oauth_flow</span><span class="p">():</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">google_auth_oauthlib.flow</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">requests</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">_requests</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">aita_core</span><span class="w"> </span><span class="kn">import</span> <span class="n">oauth_store</span>
+
+    <span class="n">cfg</span> <span class="o">=</span> <span class="n">get_config</span><span class="p">()</span>
+    <span class="n">_scopes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;openid&quot;</span><span class="p">,</span> <span class="s2">&quot;https://www.googleapis.com/auth/userinfo.profile&quot;</span><span class="p">,</span>
+               <span class="s2">&quot;https://www.googleapis.com/auth/userinfo.email&quot;</span><span class="p">]</span>
+
+    <span class="n">auth_code</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">query_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;code&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[OAUTH] code=</span><span class="si">{</span><span class="s1">&#39;YES&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">auth_code</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;NO&#39;</span><span class="si">}</span><span class="s2">, verifier=</span><span class="si">{</span><span class="s1">&#39;YES&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">oauth_store</span><span class="o">.</span><span class="n">code_verifier</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;NO&#39;</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">auth_code</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;_oauth_exchanging&quot;</span><span class="p">):</span>
+            <span class="k">return</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">_oauth_exchanging</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">flow</span> <span class="o">=</span> <span class="n">google_auth_oauthlib</span><span class="o">.</span><span class="n">flow</span><span class="o">.</span><span class="n">Flow</span><span class="o">.</span><span class="n">from_client_secrets_file</span><span class="p">(</span>
+                <span class="n">cfg</span><span class="o">.</span><span class="n">google_client_secret_file</span><span class="p">,</span> <span class="n">scopes</span><span class="o">=</span><span class="n">_scopes</span><span class="p">,</span>
+                <span class="n">redirect_uri</span><span class="o">=</span><span class="n">cfg</span><span class="o">.</span><span class="n">redirect_uri</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">flow</span><span class="o">.</span><span class="n">code_verifier</span> <span class="o">=</span> <span class="n">oauth_store</span><span class="o">.</span><span class="n">code_verifier</span>
+            <span class="n">flow</span><span class="o">.</span><span class="n">fetch_token</span><span class="p">(</span><span class="n">code</span><span class="o">=</span><span class="n">auth_code</span><span class="p">)</span>
+
+            <span class="n">creds</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">credentials</span>
+            <span class="n">user_resp</span> <span class="o">=</span> <span class="n">_requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;https://www.googleapis.com/oauth2/v2/userinfo&quot;</span><span class="p">,</span>
+                <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;Authorization&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;Bearer </span><span class="si">{</span><span class="n">creds</span><span class="o">.</span><span class="n">token</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">})</span>
+            <span class="n">user_info</span> <span class="o">=</span> <span class="n">user_resp</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[OAUTH] user_info: </span><span class="si">{</span><span class="n">user_info</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+            <span class="n">email</span> <span class="o">=</span> <span class="n">user_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;email&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[OAUTH] email=</span><span class="si">{</span><span class="n">email</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">email</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;@umn.edu&quot;</span><span class="p">):</span>
+                <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;_oauth_exchanging&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                <span class="n">st</span><span class="o">.</span><span class="n">query_params</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+                <span class="n">st</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Please sign in with your **@umn.edu** Google account.&quot;</span><span class="p">)</span>
+                <span class="k">return</span>
+
+            <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">authenticated</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">student_id</span> <span class="o">=</span> <span class="n">email</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;@&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">student_name</span> <span class="o">=</span> <span class="n">user_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">_set_cookie</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">user_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">),</span>
+                <span class="s2">&quot;email&quot;</span><span class="p">:</span> <span class="n">email</span><span class="p">,</span>
+            <span class="p">}</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;_oauth_exchanging&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="n">oauth_store</span><span class="o">.</span><span class="n">code_verifier</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[OAUTH] SUCCESS: </span><span class="si">{</span><span class="n">email</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">rerun</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[OAUTH] Exception: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;_oauth_exchanging&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="n">oauth_store</span><span class="o">.</span><span class="n">code_verifier</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">rerun</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">flow</span> <span class="o">=</span> <span class="n">google_auth_oauthlib</span><span class="o">.</span><span class="n">flow</span><span class="o">.</span><span class="n">Flow</span><span class="o">.</span><span class="n">from_client_secrets_file</span><span class="p">(</span>
+            <span class="n">cfg</span><span class="o">.</span><span class="n">google_client_secret_file</span><span class="p">,</span> <span class="n">scopes</span><span class="o">=</span><span class="n">_scopes</span><span class="p">,</span>
+            <span class="n">redirect_uri</span><span class="o">=</span><span class="n">cfg</span><span class="o">.</span><span class="n">redirect_uri</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">auth_url</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">authorization_url</span><span class="p">(</span>
+            <span class="n">access_type</span><span class="o">=</span><span class="s2">&quot;offline&quot;</span><span class="p">,</span>
+            <span class="n">include_granted_scopes</span><span class="o">=</span><span class="s2">&quot;true&quot;</span><span class="p">,</span>
+            <span class="n">prompt</span><span class="o">=</span><span class="s2">&quot;select_account&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">oauth_store</span><span class="o">.</span><span class="n">code_verifier</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">code_verifier</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[OAUTH] Auth URL generated, verifier stored: </span><span class="si">{</span><span class="n">flow</span><span class="o">.</span><span class="n">code_verifier</span><span class="p">[:</span><span class="mi">10</span><span class="p">]</span><span class="si">}</span><span class="s2">...&quot;</span> <span class="k">if</span> <span class="n">flow</span><span class="o">.</span><span class="n">code_verifier</span> <span class="k">else</span> <span class="s2">&quot;[OAUTH] No verifier&quot;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">st</span><span class="o">.</span><span class="n">markdown</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">&lt;div style=&quot;display: flex; justify-content: center;&quot;&gt;</span>
+<span class="s2">    &lt;a href=&quot;</span><span class="si">{</span><span class="n">auth_url</span><span class="si">}</span><span class="s2">&quot; target=&quot;_self&quot;</span>
+<span class="s2">       style=&quot;background-color: #4285f4; color: #fff; text-decoration: none;</span>
+<span class="s2">              text-align: center; font-size: 16px; padding: 10px 20px;</span>
+<span class="s2">              border-radius: 4px; display: inline-flex; align-items: center;</span>
+<span class="s2">              cursor: pointer;&quot;&gt;</span>
+<span class="s2">        &lt;img src=&quot;https://lh3.googleusercontent.com/COxitqgJr1sJnIDe8-jiKhxDx1FrYbtRHKJ9z_hELisAlapwE9LUPh6fcXIfb5vwpbMl4xl9H9TRFPc5NOO8Sb3VSgIBrfRYvW6cUA&quot;</span>
+<span class="s2">             alt=&quot;Google&quot; style=&quot;margin-right: 10px; width: 24px; height: 24px;</span>
+<span class="s2">             background: white; border: 2px solid white; border-radius: 3px;&quot;&gt;</span>
+<span class="s2">        Sign in with Google</span>
+<span class="s2">    &lt;/a&gt;</span>
+<span class="s2">&lt;/div&gt;</span>
+<span class="s2">&quot;&quot;&quot;</span><span class="p">,</span> <span class="n">unsafe_allow_html</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="login_page">
+<a class="viewcode-back" href="../../api/app.html#aita_core.app.login_page">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">login_page</span><span class="p">():</span>
+    <span class="n">cfg</span> <span class="o">=</span> <span class="n">get_config</span><span class="p">()</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">course_name</span><span class="p">)</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">markdown</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">course_description</span><span class="p">)</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">markdown</span><span class="p">(</span><span class="s2">&quot;---&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">cfg</span><span class="o">.</span><span class="n">google_auth_enabled</span><span class="p">:</span>
+        <span class="n">_google_oauth_flow</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">student_id</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">text_input</span><span class="p">(</span><span class="s2">&quot;Enter your UMN Student ID or Internet ID to get started:&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s2">&quot;Sign In&quot;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">student_id</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
+                <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">authenticated</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">student_id</span> <span class="o">=</span> <span class="n">student_id</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                <span class="n">st</span><span class="o">.</span><span class="n">rerun</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">st</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Please enter a valid student ID.&quot;</span><span class="p">)</span>
+
+    <span class="n">st</span><span class="o">.</span><span class="n">markdown</span><span class="p">(</span><span class="s2">&quot;---&quot;</span><span class="p">)</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">caption</span><span class="p">(</span>
+        <span class="s2">&quot;This is an AI assistant. It will guide your learning but will not give &quot;</span>
+        <span class="s2">&quot;direct answers to homework problems. Always verify with course materials &quot;</span>
+        <span class="s2">&quot;and your instructor.&quot;</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="chat_page">
+<a class="viewcode-back" href="../../api/app.html#aita_core.app.chat_page">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">chat_page</span><span class="p">():</span>
+    <span class="n">cfg</span> <span class="o">=</span> <span class="n">get_config</span><span class="p">()</span>
+
+    <span class="c1"># Set auth cookie if pending (deferred from OAuth callback)</span>
+    <span class="n">_sc</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;_set_cookie&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">_sc</span><span class="p">:</span>
+        <span class="n">_set_auth_cookie</span><span class="p">(</span><span class="n">_sc</span><span class="p">)</span>
+
+    <span class="c1"># Sidebar</span>
+    <span class="k">with</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="p">:</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">course_short_name</span><span class="p">)</span>
+        <span class="n">display_name</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;student_name&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">student_id</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">markdown</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Signed in as: **</span><span class="si">{</span><span class="n">display_name</span><span class="si">}</span><span class="s2">**&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s2">&quot;New Conversation&quot;</span><span class="p">,</span> <span class="n">use_container_width</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">chat_history</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">last_interaction_id</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">rerun</span><span class="p">()</span>
+
+        <span class="n">st</span><span class="o">.</span><span class="n">markdown</span><span class="p">(</span><span class="s2">&quot;---&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Week selector for testing</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">subheader</span><span class="p">(</span><span class="s2">&quot;Current Week&quot;</span><span class="p">)</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">current_week</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">slider</span><span class="p">(</span>
+            <span class="s2">&quot;Set current week (for testing):&quot;</span><span class="p">,</span>
+            <span class="n">min_value</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="n">max_value</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span>
+            <span class="n">value</span><span class="o">=</span><span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">current_week</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">covered</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">get_topics_covered</span><span class="p">(</span><span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">current_week</span><span class="p">)</span>
+        <span class="n">future</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">get_topics_not_covered</span><span class="p">(</span><span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">current_week</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="n">st</span><span class="o">.</span><span class="n">expander</span><span class="p">(</span><span class="s2">&quot;Topics covered so far&quot;</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">covered</span><span class="p">:</span>
+                <span class="n">st</span><span class="o">.</span><span class="n">markdown</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;- </span><span class="si">{</span><span class="n">t</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">future</span><span class="p">:</span>
+            <span class="k">with</span> <span class="n">st</span><span class="o">.</span><span class="n">expander</span><span class="p">(</span><span class="s2">&quot;Topics not yet covered&quot;</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">future</span><span class="p">:</span>
+                    <span class="n">st</span><span class="o">.</span><span class="n">markdown</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;- </span><span class="si">{</span><span class="n">t</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="n">st</span><span class="o">.</span><span class="n">markdown</span><span class="p">(</span><span class="s2">&quot;---&quot;</span><span class="p">)</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">markdown</span><span class="p">(</span>
+            <span class="s2">&quot;**How to use:**</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;- Ask about course concepts</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;- Get hints on homework approach</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;- Review for quizzes and exams</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;- Understand lecture material&quot;</span>
+        <span class="p">)</span>
+
+        <span class="n">st</span><span class="o">.</span><span class="n">markdown</span><span class="p">(</span><span class="s2">&quot;---&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Feedback &amp; Feature Request section</span>
+        <span class="k">with</span> <span class="n">st</span><span class="o">.</span><span class="n">expander</span><span class="p">(</span><span class="s2">&quot;Give Feedback&quot;</span><span class="p">):</span>
+            <span class="n">fb_comment</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">text_area</span><span class="p">(</span><span class="s2">&quot;Your feedback:&quot;</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;fb_comment&quot;</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">80</span><span class="p">)</span>
+            <span class="n">fb_rating</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">radio</span><span class="p">(</span><span class="s2">&quot;Rating:&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;Positive&quot;</span><span class="p">,</span> <span class="s2">&quot;Negative&quot;</span><span class="p">],</span> <span class="n">horizontal</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;fb_rating&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s2">&quot;Submit Feedback&quot;</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;fb_submit&quot;</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">fb_comment</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
+                    <span class="n">add_feedback</span><span class="p">(</span>
+                        <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">student_id</span><span class="p">,</span>
+                        <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">last_interaction_id</span><span class="p">,</span>
+                        <span class="mi">1</span> <span class="k">if</span> <span class="n">fb_rating</span> <span class="o">==</span> <span class="s2">&quot;Positive&quot;</span> <span class="k">else</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+                        <span class="n">fb_comment</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span>
+                    <span class="p">)</span>
+                    <span class="n">st</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="s2">&quot;Thanks for your feedback!&quot;</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">st</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Please write a comment.&quot;</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="n">st</span><span class="o">.</span><span class="n">expander</span><span class="p">(</span><span class="s2">&quot;Request a Feature&quot;</span><span class="p">):</span>
+            <span class="n">fr_title</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">text_input</span><span class="p">(</span><span class="s2">&quot;Feature title:&quot;</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;fr_title&quot;</span><span class="p">)</span>
+            <span class="n">fr_desc</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">text_area</span><span class="p">(</span><span class="s2">&quot;Description:&quot;</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;fr_desc&quot;</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">80</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s2">&quot;Submit Request&quot;</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;fr_submit&quot;</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">fr_title</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
+                    <span class="n">add_feature_request</span><span class="p">(</span>
+                        <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">student_id</span><span class="p">,</span>
+                        <span class="n">fr_title</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span>
+                        <span class="n">fr_desc</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span>
+                    <span class="p">)</span>
+                    <span class="n">st</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="s2">&quot;Feature request submitted!&quot;</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">st</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Please provide a title.&quot;</span><span class="p">)</span>
+
+        <span class="n">st</span><span class="o">.</span><span class="n">markdown</span><span class="p">(</span><span class="s2">&quot;---&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s2">&quot;Admin Panel&quot;</span><span class="p">):</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">page</span> <span class="o">=</span> <span class="s2">&quot;admin&quot;</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">rerun</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s2">&quot;Sign Out&quot;</span><span class="p">):</span>
+            <span class="n">_delete_auth_cookie</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;authenticated&quot;</span><span class="p">,</span> <span class="s2">&quot;connected&quot;</span><span class="p">,</span> <span class="s2">&quot;user_info&quot;</span><span class="p">,</span> <span class="s2">&quot;oauth_id&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;student_name&quot;</span><span class="p">,</span> <span class="s2">&quot;student_id&quot;</span><span class="p">,</span> <span class="s2">&quot;google_code_verifier&quot;</span><span class="p">]:</span>
+                <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">authenticated</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">chat_history</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">rerun</span><span class="p">()</span>
+
+    <span class="c1"># Main chat area</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">course_name</span><span class="p">)</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+        <span class="s2">&quot;**Disclaimer:** This is an AI assistant and may generate &quot;</span>
+        <span class="s2">&quot;inaccurate or incomplete information. Always verify responses &quot;</span>
+        <span class="s2">&quot;with course materials, lecture notes, and your instructor.&quot;</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Display chat history</span>
+    <span class="k">for</span> <span class="n">msg</span> <span class="ow">in</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">chat_history</span><span class="p">:</span>
+        <span class="k">with</span> <span class="n">st</span><span class="o">.</span><span class="n">chat_message</span><span class="p">(</span><span class="n">msg</span><span class="p">[</span><span class="s2">&quot;role&quot;</span><span class="p">]):</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">markdown</span><span class="p">(</span><span class="n">msg</span><span class="p">[</span><span class="s2">&quot;content&quot;</span><span class="p">])</span>
+
+    <span class="c1"># Show example prompt buttons when chat is empty</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">chat_history</span><span class="p">:</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">markdown</span><span class="p">(</span><span class="s2">&quot;**Try asking:**&quot;</span><span class="p">)</span>
+        <span class="n">examples</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">example_prompts</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">current_week</span><span class="p">,</span> <span class="p">[])</span>
+        <span class="n">cols</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">columns</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">example</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">examples</span><span class="p">):</span>
+            <span class="k">with</span> <span class="n">cols</span><span class="p">[</span><span class="n">i</span> <span class="o">%</span> <span class="mi">2</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="n">example</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;example_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">use_container_width</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+                    <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">pending_prompt</span> <span class="o">=</span> <span class="n">example</span>
+                    <span class="n">st</span><span class="o">.</span><span class="n">rerun</span><span class="p">()</span>
+
+    <span class="c1"># Determine input: either from chat box or from example button</span>
+    <span class="n">user_input</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">chat_input</span><span class="p">(</span><span class="s2">&quot;Ask a question about the course...&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">pending_prompt</span><span class="p">:</span>
+        <span class="n">user_input</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">pending_prompt</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">pending_prompt</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">if</span> <span class="n">user_input</span><span class="p">:</span>
+        <span class="k">with</span> <span class="n">st</span><span class="o">.</span><span class="n">chat_message</span><span class="p">(</span><span class="s2">&quot;user&quot;</span><span class="p">):</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">markdown</span><span class="p">(</span><span class="n">user_input</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="n">st</span><span class="o">.</span><span class="n">chat_message</span><span class="p">(</span><span class="s2">&quot;assistant&quot;</span><span class="p">):</span>
+            <span class="k">with</span> <span class="n">st</span><span class="o">.</span><span class="n">spinner</span><span class="p">(</span><span class="s2">&quot;Thinking...&quot;</span><span class="p">):</span>
+                <span class="n">history_for_rag</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">chat_history</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+                <span class="n">response</span><span class="p">,</span> <span class="n">sources</span> <span class="o">=</span> <span class="n">chat</span><span class="p">(</span>
+                    <span class="n">user_input</span><span class="p">,</span>
+                    <span class="n">history_for_rag</span><span class="p">,</span>
+                    <span class="n">current_week</span><span class="o">=</span><span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">current_week</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="n">st</span><span class="o">.</span><span class="n">markdown</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">sources</span><span class="p">:</span>
+                    <span class="k">with</span> <span class="n">st</span><span class="o">.</span><span class="n">expander</span><span class="p">(</span><span class="s2">&quot;Sources referenced&quot;</span><span class="p">):</span>
+                        <span class="k">for</span> <span class="n">src</span> <span class="ow">in</span> <span class="n">sources</span><span class="p">:</span>
+                            <span class="n">label</span> <span class="o">=</span> <span class="n">src</span><span class="p">[</span><span class="s2">&quot;label&quot;</span><span class="p">]</span>
+                            <span class="n">resolved</span> <span class="o">=</span> <span class="n">resolve_file_path</span><span class="p">(</span><span class="n">src</span><span class="p">[</span><span class="s2">&quot;file_path&quot;</span><span class="p">])</span>
+                            <span class="k">if</span> <span class="n">resolved</span><span class="p">:</span>
+                                <span class="n">fname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">resolved</span><span class="p">)</span>
+                                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">resolved</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                                    <span class="n">file_bytes</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+                                <span class="n">st</span><span class="o">.</span><span class="n">download_button</span><span class="p">(</span>
+                                    <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Download: </span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                                    <span class="n">data</span><span class="o">=</span><span class="n">file_bytes</span><span class="p">,</span>
+                                    <span class="n">file_name</span><span class="o">=</span><span class="n">fname</span><span class="p">,</span>
+                                    <span class="n">mime</span><span class="o">=</span><span class="s2">&quot;application/pdf&quot;</span><span class="p">,</span>
+                                    <span class="n">key</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;dl_</span><span class="si">{</span><span class="nb">hash</span><span class="p">(</span><span class="n">resolved</span><span class="p">)</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="nb">hash</span><span class="p">(</span><span class="n">user_input</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                                <span class="p">)</span>
+                            <span class="k">elif</span> <span class="n">src</span><span class="p">[</span><span class="s2">&quot;file_path&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;http&quot;</span><span class="p">):</span>
+                                <span class="n">st</span><span class="o">.</span><span class="n">markdown</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;- [</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s2">](</span><span class="si">{</span><span class="n">src</span><span class="p">[</span><span class="s1">&#39;file_path&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+                            <span class="k">else</span><span class="p">:</span>
+                                <span class="n">st</span><span class="o">.</span><span class="n">markdown</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;- </span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Log interaction to DB</span>
+        <span class="n">source_labels</span> <span class="o">=</span> <span class="p">[</span><span class="n">s</span><span class="p">[</span><span class="s2">&quot;label&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">sources</span><span class="p">]</span>
+        <span class="n">interaction_id</span> <span class="o">=</span> <span class="n">log_interaction</span><span class="p">(</span>
+            <span class="n">student_id</span><span class="o">=</span><span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">student_id</span><span class="p">,</span>
+            <span class="n">week</span><span class="o">=</span><span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">current_week</span><span class="p">,</span>
+            <span class="n">question</span><span class="o">=</span><span class="n">user_input</span><span class="p">,</span>
+            <span class="n">response</span><span class="o">=</span><span class="n">response</span><span class="p">,</span>
+            <span class="n">sources</span><span class="o">=</span><span class="n">source_labels</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">last_interaction_id</span> <span class="o">=</span> <span class="n">interaction_id</span>
+
+        <span class="c1"># Update chat history</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">chat_history</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;user&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="n">user_input</span><span class="p">})</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">chat_history</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;assistant&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="n">response</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="main">
+<a class="viewcode-back" href="../../api/app.html#aita_core.app.main">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
+    <span class="n">cfg</span> <span class="o">=</span> <span class="n">get_config</span><span class="p">()</span>
+
+    <span class="n">st</span><span class="o">.</span><span class="n">set_page_config</span><span class="p">(</span>
+        <span class="n">page_title</span><span class="o">=</span><span class="n">cfg</span><span class="o">.</span><span class="n">course_name</span><span class="p">,</span>
+        <span class="n">page_icon</span><span class="o">=</span><span class="s2">&quot;📊&quot;</span><span class="p">,</span>
+        <span class="n">layout</span><span class="o">=</span><span class="s2">&quot;centered&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="c1"># --- Mobile-friendly CSS ---</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">markdown</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">&lt;style&gt;</span>
+<span class="s2">@media (max-width: 768px) {</span>
+<span class="s2">    .block-container {</span>
+<span class="s2">        padding-left: 1rem !important;</span>
+<span class="s2">        padding-right: 1rem !important;</span>
+<span class="s2">        max-width: 100% !important;</span>
+<span class="s2">    }</span>
+<span class="s2">    h1 { font-size: 1.5rem !important; }</span>
+<span class="s2">    [data-testid=&quot;column&quot;] {</span>
+<span class="s2">        width: 100% !important;</span>
+<span class="s2">        flex: 1 1 100% !important;</span>
+<span class="s2">    }</span>
+<span class="s2">    [data-testid=&quot;stChatInput&quot;] {</span>
+<span class="s2">        padding-left: 0.5rem !important;</span>
+<span class="s2">        padding-right: 0.5rem !important;</span>
+<span class="s2">    }</span>
+<span class="s2">    [data-testid=&quot;stSidebar&quot;] {</span>
+<span class="s2">        min-width: 260px !important;</span>
+<span class="s2">        max-width: 260px !important;</span>
+<span class="s2">    }</span>
+<span class="s2">}</span>
+<span class="s2">[data-testid=&quot;stChatMessage&quot;] {</span>
+<span class="s2">    overflow-wrap: break-word;</span>
+<span class="s2">    word-break: break-word;</span>
+<span class="s2">}</span>
+<span class="s2">[data-testid=&quot;stDownloadButton&quot;] button {</span>
+<span class="s2">    white-space: normal !important;</span>
+<span class="s2">    text-align: left !important;</span>
+<span class="s2">}</span>
+<span class="s2">&lt;/style&gt;</span>
+<span class="s2">&quot;&quot;&quot;</span><span class="p">,</span> <span class="n">unsafe_allow_html</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="c1"># --- Session state init ---</span>
+    <span class="k">if</span> <span class="s2">&quot;chat_history&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="p">:</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">chat_history</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">if</span> <span class="s2">&quot;authenticated&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="p">:</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">authenticated</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">cookie_data</span> <span class="o">=</span> <span class="n">_get_auth_cookie</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">cookie_data</span> <span class="ow">and</span> <span class="s2">&quot;email&quot;</span> <span class="ow">in</span> <span class="n">cookie_data</span><span class="p">:</span>
+            <span class="n">email</span> <span class="o">=</span> <span class="n">cookie_data</span><span class="p">[</span><span class="s2">&quot;email&quot;</span><span class="p">]</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">authenticated</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">student_id</span> <span class="o">=</span> <span class="n">email</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;@&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="s2">&quot;@&quot;</span> <span class="ow">in</span> <span class="n">email</span> <span class="k">else</span> <span class="n">email</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">student_name</span> <span class="o">=</span> <span class="n">cookie_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="s2">&quot;current_week&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="p">:</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">current_week</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">if</span> <span class="s2">&quot;page&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="p">:</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">page</span> <span class="o">=</span> <span class="s2">&quot;chat&quot;</span>
+    <span class="k">if</span> <span class="s2">&quot;last_interaction_id&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="p">:</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">last_interaction_id</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="s2">&quot;pending_prompt&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="p">:</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">pending_prompt</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="c1"># Clean up leftover OAuth query params if already authenticated</span>
+    <span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">authenticated</span> <span class="ow">and</span> <span class="n">st</span><span class="o">.</span><span class="n">query_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;code&quot;</span><span class="p">):</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">query_params</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;page&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;admin&quot;</span><span class="p">:</span>
+        <span class="n">admin_page</span><span class="p">()</span>
+    <span class="k">elif</span> <span class="ow">not</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">authenticated</span><span class="p">:</span>
+        <span class="n">login_page</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">chat_page</span><span class="p">()</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, UMN Choi Lab.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

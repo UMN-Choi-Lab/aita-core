@@ -1,0 +1,831 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>aita_core.ingest &mdash; aita-core 0.4.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=6c02275b"></script>
+      <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            aita-core
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting-started.html">Getting Started</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../getting-started.html#prerequisites">Prerequisites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../getting-started.html#using-the-template-recommended">Using the Template (Recommended)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../getting-started.html#manual-setup">Manual Setup</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../getting-started.html#step-1-create-your-course-repository">Step 1: Create Your Course Repository</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../getting-started.html#step-2-install-aita-core">Step 2: Install aita-core</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../getting-started.html#step-3-set-up-environment-variables">Step 3: Set Up Environment Variables</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../getting-started.html#step-4-add-course-materials">Step 4: Add Course Materials</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../getting-started.html#step-5-create-config-py">Step 5: Create <code class="docutils literal notranslate"><span class="pre">config.py</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../getting-started.html#step-6-create-main-py">Step 6: Create <code class="docutils literal notranslate"><span class="pre">main.py</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../getting-started.html#step-7-create-add-document-py">Step 7: Create <code class="docutils literal notranslate"><span class="pre">add_document.py</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../getting-started.html#step-8-build-the-vector-store">Step 8: Build the Vector Store</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../getting-started.html#step-9-test-locally">Step 9: Test Locally</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../getting-started.html#step-10-deploy">Step 10: Deploy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../getting-started.html#recommended-gitignore">Recommended <code class="docutils literal notranslate"><span class="pre">.gitignore</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../configuration.html">Configuration</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../configuration.html#field-reference">Field Reference</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../configuration.html#course-identity">Course Identity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../configuration.html#week-topic-mappings">Week &amp; Topic Mappings</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../configuration.html#textbook-optional">Textbook (Optional)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../configuration.html#paths">Paths</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../configuration.html#authentication">Authentication</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../configuration.html#llm-embedding-settings">LLM &amp; Embedding Settings</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../configuration.html#config-overrides-admin-panel">Config Overrides (Admin Panel)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../configuration.html#computed-properties">Computed Properties</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../deployment.html">Deployment</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../deployment.html#dockerfile">Dockerfile</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../deployment.html#docker-compose-yml">docker-compose.yml</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../deployment.html#build-and-run">Build and Run</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../deployment.html#custom-port">Custom Port</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../deployment.html#data-persistence">Data Persistence</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../deployment.html#updating-aita-core">Updating aita-core</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../deployment.html#cost-estimate">Cost Estimate</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../google-oauth.html">Google OAuth Setup</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../google-oauth.html#setup-steps">Setup Steps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../google-oauth.html#how-it-works">How It Works</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../google-oauth.html#domain-restriction">Domain Restriction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../google-oauth.html#troubleshooting">Troubleshooting</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Architecture</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../architecture.html">Architecture</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../architecture.html#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../architecture.html#request-flow">Request Flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../architecture.html#week-aware-filtering">Week-Aware Filtering</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../architecture.html#document-ingestion-pipeline">Document Ingestion Pipeline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../architecture.html#module-dependency-graph">Module Dependency Graph</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">Module Overview</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/config.html"><code class="docutils literal notranslate"><span class="pre">aita_core.config</span></code> — Configuration</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../api/config.html#aita_core.config.CourseConfig"><code class="docutils literal notranslate"><span class="pre">CourseConfig</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../api/config.html#aita_core.config.CourseConfig.course_id"><code class="docutils literal notranslate"><span class="pre">CourseConfig.course_id</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/config.html#aita_core.config.CourseConfig.course_name"><code class="docutils literal notranslate"><span class="pre">CourseConfig.course_name</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/config.html#aita_core.config.CourseConfig.course_short_name"><code class="docutils literal notranslate"><span class="pre">CourseConfig.course_short_name</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/config.html#aita_core.config.CourseConfig.course_description"><code class="docutils literal notranslate"><span class="pre">CourseConfig.course_description</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/config.html#aita_core.config.CourseConfig.system_prompt"><code class="docutils literal notranslate"><span class="pre">CourseConfig.system_prompt</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/config.html#aita_core.config.CourseConfig.week_topics"><code class="docutils literal notranslate"><span class="pre">CourseConfig.week_topics</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/config.html#aita_core.config.CourseConfig.topic_num_to_week"><code class="docutils literal notranslate"><span class="pre">CourseConfig.topic_num_to_week</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/config.html#aita_core.config.CourseConfig.hw_num_to_week"><code class="docutils literal notranslate"><span class="pre">CourseConfig.hw_num_to_week</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/config.html#aita_core.config.CourseConfig.lab_num_to_week"><code class="docutils literal notranslate"><span class="pre">CourseConfig.lab_num_to_week</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/config.html#aita_core.config.CourseConfig.study_guide_to_week"><code class="docutils literal notranslate"><span class="pre">CourseConfig.study_guide_to_week</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/config.html#aita_core.config.CourseConfig.example_prompts"><code class="docutils literal notranslate"><span class="pre">CourseConfig.example_prompts</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/config.html#aita_core.config.CourseConfig.base_dir"><code class="docutils literal notranslate"><span class="pre">CourseConfig.base_dir</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/config.html#aita_core.config.CourseConfig.course_materials_dir"><code class="docutils literal notranslate"><span class="pre">CourseConfig.course_materials_dir</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/config.html#aita_core.config.CourseConfig.faiss_db_dir"><code class="docutils literal notranslate"><span class="pre">CourseConfig.faiss_db_dir</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/config.html#aita_core.config.CourseConfig.docs_dir"><code class="docutils literal notranslate"><span class="pre">CourseConfig.docs_dir</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/config.html#aita_core.config.CourseConfig.backup_dir"><code class="docutils literal notranslate"><span class="pre">CourseConfig.backup_dir</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/config.html#aita_core.config.CourseConfig.data_dir"><code class="docutils literal notranslate"><span class="pre">CourseConfig.data_dir</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/config.html#aita_core.config.CourseConfig.admin_password"><code class="docutils literal notranslate"><span class="pre">CourseConfig.admin_password</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/config.html#aita_core.config.CourseConfig.cookie_name"><code class="docutils literal notranslate"><span class="pre">CourseConfig.cookie_name</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/config.html#aita_core.config.CourseConfig.cookie_key"><code class="docutils literal notranslate"><span class="pre">CourseConfig.cookie_key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/config.html#aita_core.config.CourseConfig.redirect_uri"><code class="docutils literal notranslate"><span class="pre">CourseConfig.redirect_uri</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/config.html#aita_core.config.CourseConfig.google_client_secret_file"><code class="docutils literal notranslate"><span class="pre">CourseConfig.google_client_secret_file</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/config.html#aita_core.config.CourseConfig.textbook_url"><code class="docutils literal notranslate"><span class="pre">CourseConfig.textbook_url</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/config.html#aita_core.config.CourseConfig.textbook_chapter_to_week"><code class="docutils literal notranslate"><span class="pre">CourseConfig.textbook_chapter_to_week</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/config.html#aita_core.config.CourseConfig.embedding_model"><code class="docutils literal notranslate"><span class="pre">CourseConfig.embedding_model</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/config.html#aita_core.config.CourseConfig.embedding_dimensions"><code class="docutils literal notranslate"><span class="pre">CourseConfig.embedding_dimensions</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/config.html#aita_core.config.CourseConfig.llm_model"><code class="docutils literal notranslate"><span class="pre">CourseConfig.llm_model</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/config.html#aita_core.config.CourseConfig.llm_temperature"><code class="docutils literal notranslate"><span class="pre">CourseConfig.llm_temperature</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/config.html#aita_core.config.CourseConfig.chunk_size"><code class="docutils literal notranslate"><span class="pre">CourseConfig.chunk_size</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/config.html#aita_core.config.CourseConfig.chunk_overlap"><code class="docutils literal notranslate"><span class="pre">CourseConfig.chunk_overlap</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/config.html#aita_core.config.CourseConfig.retrieval_k"><code class="docutils literal notranslate"><span class="pre">CourseConfig.retrieval_k</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/config.html#aita_core.config.CourseConfig.google_auth_enabled"><code class="docutils literal notranslate"><span class="pre">CourseConfig.google_auth_enabled</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/config.html#aita_core.config.CourseConfig.week_to_hw"><code class="docutils literal notranslate"><span class="pre">CourseConfig.week_to_hw</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/config.html#aita_core.config.CourseConfig.get_topics_covered"><code class="docutils literal notranslate"><span class="pre">CourseConfig.get_topics_covered()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/config.html#aita_core.config.CourseConfig.get_topics_not_covered"><code class="docutils literal notranslate"><span class="pre">CourseConfig.get_topics_not_covered()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/config.html#aita_core.config.CourseConfig.load_overrides"><code class="docutils literal notranslate"><span class="pre">CourseConfig.load_overrides()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/config.html#aita_core.config.CourseConfig.save_overrides"><code class="docutils literal notranslate"><span class="pre">CourseConfig.save_overrides()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/config.html#aita_core.config.set_config"><code class="docutils literal notranslate"><span class="pre">set_config()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/config.html#aita_core.config.get_config"><code class="docutils literal notranslate"><span class="pre">get_config()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/config.html#constants">Constants</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../api/config.html#aita_core.config.INT_KEY_DICT_FIELDS"><code class="docutils literal notranslate"><span class="pre">INT_KEY_DICT_FIELDS</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/config.html#aita_core.config.EDITABLE_FIELDS"><code class="docutils literal notranslate"><span class="pre">EDITABLE_FIELDS</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/app.html"><code class="docutils literal notranslate"><span class="pre">aita_core.app</span></code> — Streamlit Application</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../api/app.html#entry-point">Entry Point</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../api/app.html#aita_core.app.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/app.html#pages">Pages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../api/app.html#aita_core.app.login_page"><code class="docutils literal notranslate"><span class="pre">login_page()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/app.html#aita_core.app.chat_page"><code class="docutils literal notranslate"><span class="pre">chat_page()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/app.html#authentication-helpers">Authentication Helpers</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../api/app.html#aita_core.app.resolve_file_path"><code class="docutils literal notranslate"><span class="pre">resolve_file_path()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/app.html#chat-page-features">Chat Page Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/app.html#sidebar-widgets">Sidebar Widgets</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/rag.html"><code class="docutils literal notranslate"><span class="pre">aita_core.rag</span></code> — RAG Pipeline</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../api/rag.html#pipeline-functions">Pipeline Functions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../api/rag.html#aita_core.rag.chat"><code class="docutils literal notranslate"><span class="pre">chat()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/rag.html#aita_core.rag.retrieve"><code class="docutils literal notranslate"><span class="pre">retrieve()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/rag.html#aita_core.rag.build_messages"><code class="docutils literal notranslate"><span class="pre">build_messages()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/rag.html#aita_core.rag.build_system_prompt"><code class="docutils literal notranslate"><span class="pre">build_system_prompt()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/rag.html#homework-injection">Homework Injection</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../api/rag.html#aita_core.rag._inject_current_hw"><code class="docutils literal notranslate"><span class="pre">_inject_current_hw()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/rag.html#week-aware-system-prompt">Week-Aware System Prompt</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../api/rag.html#aita_core.rag.FUTURE_TOPIC_INSTRUCTION"><code class="docutils literal notranslate"><span class="pre">FUTURE_TOPIC_INSTRUCTION</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/rag.html#internal-functions">Internal Functions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../api/rag.html#aita_core.rag._get_client"><code class="docutils literal notranslate"><span class="pre">_get_client()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/rag.html#aita_core.rag._load_index"><code class="docutils literal notranslate"><span class="pre">_load_index()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/ingest.html"><code class="docutils literal notranslate"><span class="pre">aita_core.ingest</span></code> — Document Ingestion</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../api/ingest.html#pipeline-runner">Pipeline Runner</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../api/ingest.html#aita_core.ingest.run_ingestion"><code class="docutils literal notranslate"><span class="pre">run_ingestion()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/ingest.html#default-collectors">Default Collectors</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../api/ingest.html#aita_core.ingest.collect_handouts"><code class="docutils literal notranslate"><span class="pre">collect_handouts()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/ingest.html#aita_core.ingest.collect_homework"><code class="docutils literal notranslate"><span class="pre">collect_homework()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/ingest.html#aita_core.ingest.collect_slides"><code class="docutils literal notranslate"><span class="pre">collect_slides()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/ingest.html#aita_core.ingest.collect_syllabus"><code class="docutils literal notranslate"><span class="pre">collect_syllabus()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/ingest.html#aita_core.ingest.collect_wikibook"><code class="docutils literal notranslate"><span class="pre">collect_wikibook()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/ingest.html#document-loaders">Document Loaders</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../api/ingest.html#aita_core.ingest.load_pdf"><code class="docutils literal notranslate"><span class="pre">load_pdf()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/ingest.html#aita_core.ingest.load_tex"><code class="docutils literal notranslate"><span class="pre">load_tex()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/ingest.html#aita_core.ingest.load_wikibook_page"><code class="docutils literal notranslate"><span class="pre">load_wikibook_page()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/ingest.html#aita_core.ingest.clean_pdf_text"><code class="docutils literal notranslate"><span class="pre">clean_pdf_text()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/ingest.html#text-chunking">Text Chunking</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../api/ingest.html#aita_core.ingest.chunk_documents"><code class="docutils literal notranslate"><span class="pre">chunk_documents()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/ingest.html#aita_core.ingest.chunk_text"><code class="docutils literal notranslate"><span class="pre">chunk_text()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/ingest.html#embedding-indexing">Embedding &amp; Indexing</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../api/ingest.html#aita_core.ingest.get_embeddings"><code class="docutils literal notranslate"><span class="pre">get_embeddings()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/ingest.html#aita_core.ingest.build_faiss_index"><code class="docutils literal notranslate"><span class="pre">build_faiss_index()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/ingest.html#aita_core.ingest.save_index"><code class="docutils literal notranslate"><span class="pre">save_index()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/ingest.html#week-assignment">Week Assignment</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../api/ingest.html#aita_core.ingest.get_week_for_filename"><code class="docutils literal notranslate"><span class="pre">get_week_for_filename()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/ingest.html#custom-collectors">Custom Collectors</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/db.html"><code class="docutils literal notranslate"><span class="pre">aita_core.db</span></code> — Database</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../api/db.html#connection">Connection</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../api/db.html#aita_core.db.get_conn"><code class="docutils literal notranslate"><span class="pre">get_conn()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/db.html#interactions">Interactions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../api/db.html#aita_core.db.log_interaction"><code class="docutils literal notranslate"><span class="pre">log_interaction()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/db.html#aita_core.db.get_interactions"><code class="docutils literal notranslate"><span class="pre">get_interactions()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/db.html#aita_core.db.count_interactions"><code class="docutils literal notranslate"><span class="pre">count_interactions()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/db.html#aita_core.db.rate_interaction"><code class="docutils literal notranslate"><span class="pre">rate_interaction()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/db.html#feedback">Feedback</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../api/db.html#aita_core.db.add_feedback"><code class="docutils literal notranslate"><span class="pre">add_feedback()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/db.html#aita_core.db.get_feedback"><code class="docutils literal notranslate"><span class="pre">get_feedback()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/db.html#feature-requests">Feature Requests</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../api/db.html#aita_core.db.add_feature_request"><code class="docutils literal notranslate"><span class="pre">add_feature_request()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/db.html#aita_core.db.get_feature_requests"><code class="docutils literal notranslate"><span class="pre">get_feature_requests()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/db.html#aita_core.db.update_feature_request_status"><code class="docutils literal notranslate"><span class="pre">update_feature_request_status()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/db.html#analytics">Analytics</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../api/db.html#aita_core.db.get_interaction_stats"><code class="docutils literal notranslate"><span class="pre">get_interaction_stats()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/db.html#database-schema">Database Schema</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/admin.html"><code class="docutils literal notranslate"><span class="pre">aita_core.admin</span></code> — Admin Dashboard</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../api/admin.html#entry-point">Entry Point</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../api/admin.html#aita_core.admin.admin_page"><code class="docutils literal notranslate"><span class="pre">admin_page()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/admin.html#aita_core.admin.admin_dashboard"><code class="docutils literal notranslate"><span class="pre">admin_dashboard()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/admin.html#authentication">Authentication</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../api/admin.html#aita_core.admin.check_admin_auth"><code class="docutils literal notranslate"><span class="pre">check_admin_auth()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/admin.html#aita_core.admin.admin_login"><code class="docutils literal notranslate"><span class="pre">admin_login()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/admin.html#course-settings">Course Settings</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../api/admin.html#aita_core.admin.admin_settings"><code class="docutils literal notranslate"><span class="pre">admin_settings()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/admin.html#dashboard-tabs">Dashboard Tabs</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/utils.html"><code class="docutils literal notranslate"><span class="pre">aita_core.utils</span></code> — Utilities</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../api/utils.html#aita_core.utils.save_docs_to_jsonl"><code class="docutils literal notranslate"><span class="pre">save_docs_to_jsonl()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/utils.html#aita_core.utils.load_docs_from_jsonl"><code class="docutils literal notranslate"><span class="pre">load_docs_from_jsonl()</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">aita-core</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">aita_core.ingest</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for aita_core.ingest</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Document ingestion utilities for AITA.</span>
+
+<span class="sd">Standard usage (default directory layout):</span>
+
+<span class="sd">    from config import CONFIG</span>
+<span class="sd">    from aita_core.ingest import run_ingestion</span>
+<span class="sd">    run_ingestion(CONFIG)</span>
+
+<span class="sd">Custom collectors (non-standard layout):</span>
+
+<span class="sd">    from config import CONFIG</span>
+<span class="sd">    from aita_core.ingest import run_ingestion</span>
+
+<span class="sd">    def my_collect_handouts(config):</span>
+<span class="sd">        ...</span>
+<span class="sd">        return docs</span>
+
+<span class="sd">    run_ingestion(CONFIG, collectors=[</span>
+<span class="sd">        (&quot;handouts&quot;, my_collect_handouts),</span>
+<span class="sd">        (&quot;homework&quot;, my_collect_homework),</span>
+<span class="sd">    ])</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pickle</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">shutil</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">datetime</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">faiss</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">openai</span><span class="w"> </span><span class="kn">import</span> <span class="n">OpenAI</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pdfminer.high_level</span><span class="w"> </span><span class="kn">import</span> <span class="n">extract_text</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">aita_core.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">save_docs_to_jsonl</span>
+
+
+<span class="n">_client</span> <span class="o">=</span> <span class="kc">None</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_client</span><span class="p">():</span>
+    <span class="k">global</span> <span class="n">_client</span>
+    <span class="k">if</span> <span class="n">_client</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">_client</span> <span class="o">=</span> <span class="n">OpenAI</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">_client</span>
+
+
+<span class="c1"># ---------------------------------------------------------------------------</span>
+<span class="c1"># Week tagging</span>
+<span class="c1"># ---------------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="get_week_for_filename">
+<a class="viewcode-back" href="../../api/ingest.html#aita_core.ingest.get_week_for_filename">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_week_for_filename</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">topic_num_to_week</span><span class="p">,</span> <span class="n">hw_num_to_week</span><span class="p">,</span>
+                          <span class="n">lab_num_to_week</span><span class="p">,</span> <span class="n">study_guide_to_week</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Determine which week a document belongs to based on its filename.&quot;&quot;&quot;</span>
+    <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^(\d+)\s&quot;</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
+        <span class="n">topic_num</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">topic_num_to_week</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">topic_num</span><span class="p">,</span> <span class="mi">15</span><span class="p">)</span>
+
+    <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^HW(\d+)&quot;</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
+        <span class="n">hw_num</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">hw_num_to_week</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">hw_num</span><span class="p">,</span> <span class="mi">15</span><span class="p">)</span>
+
+    <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^Lab\s*(\d+)&quot;</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
+        <span class="n">lab_num</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">lab_num_to_week</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">lab_num</span><span class="p">,</span> <span class="mi">15</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">guide_key</span><span class="p">,</span> <span class="n">week</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">study_guide_to_week</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">])):</span>
+        <span class="k">if</span> <span class="n">filename</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">guide_key</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">week</span>
+
+    <span class="k">if</span> <span class="s2">&quot;syllabus&quot;</span> <span class="ow">in</span> <span class="n">filename</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
+        <span class="k">return</span> <span class="mi">1</span>
+
+    <span class="k">return</span> <span class="mi">1</span></div>
+
+
+
+<span class="c1"># ---------------------------------------------------------------------------</span>
+<span class="c1"># Text extraction</span>
+<span class="c1"># ---------------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="clean_pdf_text">
+<a class="viewcode-back" href="../../api/ingest.html#aita_core.ingest.clean_pdf_text">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">clean_pdf_text</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\x0c</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="p">)</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="p">)</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\s{2,}&quot;</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">text</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span></div>
+
+
+
+<div class="viewcode-block" id="load_pdf">
+<a class="viewcode-back" href="../../api/ingest.html#aita_core.ingest.load_pdf">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">load_pdf</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">source_label</span><span class="p">,</span> <span class="n">max_week</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="n">extract_text</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="n">clean_pdf_text</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">text</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[]</span>
+    <span class="k">return</span> <span class="p">[{</span><span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="n">text</span><span class="p">,</span> <span class="s2">&quot;metadata&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="n">file_path</span><span class="p">,</span> <span class="s2">&quot;source_label&quot;</span><span class="p">:</span> <span class="n">source_label</span><span class="p">,</span> <span class="s2">&quot;max_week&quot;</span><span class="p">:</span> <span class="n">max_week</span><span class="p">}}]</span></div>
+
+
+
+<div class="viewcode-block" id="load_tex">
+<a class="viewcode-back" href="../../api/ingest.html#aita_core.ingest.load_tex">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">load_tex</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">source_label</span><span class="p">,</span> <span class="n">max_week</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">content</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+    <span class="n">content</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;(?m)^%.*$&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">content</span><span class="p">)</span>
+    <span class="n">content</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span>
+        <span class="sa">r</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s2">(documentclass|usepackage|begin\{document\}|end\{document\}|maketitle|input\{[^}]*\}|newcommand[^}]*\}[^}]*\})&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">content</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">content</span> <span class="o">=</span> <span class="n">content</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">content</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[]</span>
+    <span class="k">return</span> <span class="p">[{</span><span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="n">content</span><span class="p">,</span> <span class="s2">&quot;metadata&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="n">file_path</span><span class="p">,</span> <span class="s2">&quot;source_label&quot;</span><span class="p">:</span> <span class="n">source_label</span><span class="p">,</span> <span class="s2">&quot;max_week&quot;</span><span class="p">:</span> <span class="n">max_week</span><span class="p">}}]</span></div>
+
+
+
+<div class="viewcode-block" id="load_wikibook_page">
+<a class="viewcode-back" href="../../api/ingest.html#aita_core.ingest.load_wikibook_page">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">load_wikibook_page</span><span class="p">(</span><span class="n">url</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Fetch a Wikibook page and extract clean text content.&quot;&quot;&quot;</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">urllib.request</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">html.parser</span><span class="w"> </span><span class="kn">import</span> <span class="n">HTMLParser</span>
+
+    <span class="k">class</span><span class="w"> </span><span class="nc">_TextExtractor</span><span class="p">(</span><span class="n">HTMLParser</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">in_content</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">skip</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">skip_tags</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;script&quot;</span><span class="p">,</span> <span class="s2">&quot;style&quot;</span><span class="p">,</span> <span class="s2">&quot;sup&quot;</span><span class="p">,</span> <span class="s2">&quot;nav&quot;</span><span class="p">}</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">handle_starttag</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag</span><span class="p">,</span> <span class="n">attrs</span><span class="p">):</span>
+            <span class="n">attrs_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">attrs</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">attrs_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;mw-content-text&quot;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">in_content</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">if</span> <span class="n">tag</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">skip_tags</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">skip</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">handle_endtag</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">tag</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">skip_tags</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">skip</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">if</span> <span class="n">tag</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;p&quot;</span><span class="p">,</span> <span class="s2">&quot;h2&quot;</span><span class="p">,</span> <span class="s2">&quot;h3&quot;</span><span class="p">,</span> <span class="s2">&quot;h4&quot;</span><span class="p">,</span> <span class="s2">&quot;li&quot;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">handle_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_content</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">skip</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+    <span class="n">req</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">Request</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;User-Agent&quot;</span><span class="p">:</span> <span class="s2">&quot;Mozilla/5.0&quot;</span><span class="p">})</span>
+    <span class="k">with</span> <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">urlopen</span><span class="p">(</span><span class="n">req</span><span class="p">)</span> <span class="k">as</span> <span class="n">resp</span><span class="p">:</span>
+        <span class="n">html</span> <span class="o">=</span> <span class="n">resp</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span><span class="p">)</span>
+
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">_TextExtractor</span><span class="p">()</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">feed</span><span class="p">(</span><span class="n">html</span><span class="p">)</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parser</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\n{3,}&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[ \t]+&quot;</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">text</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span></div>
+
+
+
+<div class="viewcode-block" id="collect_wikibook">
+<a class="viewcode-back" href="../../api/ingest.html#aita_core.ingest.collect_wikibook">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">collect_wikibook</span><span class="p">(</span><span class="n">config</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Collect chapters from a Wikibook URL.</span>
+
+<span class="sd">    Requires config to have:</span>
+<span class="sd">        textbook_url: str — base URL, e.g.</span>
+<span class="sd">            &quot;https://en.wikibooks.org/wiki/Fundamentals_of_Transportation&quot;</span>
+<span class="sd">        textbook_chapter_to_week: dict[str, int] — maps chapter slug to week,</span>
+<span class="sd">            e.g. {&quot;Trip_Generation&quot;: 2, &quot;Route_Choice&quot;: 4}</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">urllib.request</span>
+
+    <span class="n">url</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="s2">&quot;textbook_url&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="n">chapter_to_week</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="s2">&quot;textbook_chapter_to_week&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">url</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">chapter_to_week</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  Skipping: textbook_url or textbook_chapter_to_week not set&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">[]</span>
+
+    <span class="n">docs</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">chapter_slug</span><span class="p">,</span> <span class="n">week</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">chapter_to_week</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+        <span class="n">chapter_url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">url</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">chapter_slug</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">chapter_name</span> <span class="o">=</span> <span class="n">chapter_slug</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="p">)</span>
+        <span class="n">label</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Textbook: </span><span class="si">{</span><span class="n">chapter_name</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Loading </span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s2"> (week </span><span class="si">{</span><span class="n">week</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">text</span> <span class="o">=</span> <span class="n">load_wikibook_page</span><span class="p">(</span><span class="n">chapter_url</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">text</span><span class="p">:</span>
+                <span class="n">docs</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+                    <span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="n">text</span><span class="p">,</span>
+                    <span class="s2">&quot;metadata&quot;</span><span class="p">:</span> <span class="p">{</span>
+                        <span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="n">chapter_url</span><span class="p">,</span>
+                        <span class="s2">&quot;source_label&quot;</span><span class="p">:</span> <span class="n">label</span><span class="p">,</span>
+                        <span class="s2">&quot;max_week&quot;</span><span class="p">:</span> <span class="n">week</span><span class="p">,</span>
+                    <span class="p">},</span>
+                <span class="p">})</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Error fetching </span><span class="si">{</span><span class="n">chapter_url</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">docs</span></div>
+
+
+
+<span class="c1"># ---------------------------------------------------------------------------</span>
+<span class="c1"># Chunking</span>
+<span class="c1"># ---------------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="chunk_text">
+<a class="viewcode-back" href="../../api/ingest.html#aita_core.ingest.chunk_text">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">chunk_text</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">chunk_size</span><span class="o">=</span><span class="mi">2048</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="mi">256</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Split text into overlapping chunks.&quot;&quot;&quot;</span>
+    <span class="n">chunks</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">start</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">while</span> <span class="n">start</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
+        <span class="n">end</span> <span class="o">=</span> <span class="n">start</span> <span class="o">+</span> <span class="n">chunk_size</span>
+        <span class="n">chunks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">text</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">end</span><span class="p">])</span>
+        <span class="n">start</span> <span class="o">+=</span> <span class="n">chunk_size</span> <span class="o">-</span> <span class="n">overlap</span>
+    <span class="k">return</span> <span class="n">chunks</span></div>
+
+
+
+<div class="viewcode-block" id="chunk_documents">
+<a class="viewcode-back" href="../../api/ingest.html#aita_core.ingest.chunk_documents">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">chunk_documents</span><span class="p">(</span><span class="n">docs</span><span class="p">,</span> <span class="n">chunk_size</span><span class="o">=</span><span class="mi">2048</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="mi">256</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Split all documents into chunks, preserving metadata.&quot;&quot;&quot;</span>
+    <span class="n">all_chunks</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">:</span>
+        <span class="n">text_chunks</span> <span class="o">=</span> <span class="n">chunk_text</span><span class="p">(</span><span class="n">doc</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">],</span> <span class="n">chunk_size</span><span class="p">,</span> <span class="n">overlap</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="n">text_chunks</span><span class="p">:</span>
+            <span class="n">label</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">][</span><span class="s2">&quot;source_label&quot;</span><span class="p">]</span>
+            <span class="n">all_chunks</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+                <span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;Source: </span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="se">\n</span><span class="si">{</span><span class="n">chunk</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;metadata&quot;</span><span class="p">:</span> <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">],</span>
+            <span class="p">})</span>
+    <span class="k">return</span> <span class="n">all_chunks</span></div>
+
+
+
+<span class="c1"># ---------------------------------------------------------------------------</span>
+<span class="c1"># Embeddings</span>
+<span class="c1"># ---------------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="get_embeddings">
+<a class="viewcode-back" href="../../api/ingest.html#aita_core.ingest.get_embeddings">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_embeddings</span><span class="p">(</span><span class="n">texts</span><span class="p">,</span> <span class="n">embedding_model</span><span class="o">=</span><span class="s2">&quot;text-embedding-3-large&quot;</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Call OpenAI embeddings API in batches. Returns numpy array.&quot;&quot;&quot;</span>
+    <span class="n">client</span> <span class="o">=</span> <span class="n">_get_client</span><span class="p">()</span>
+    <span class="n">all_embeddings</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">texts</span><span class="p">),</span> <span class="n">batch_size</span><span class="p">):</span>
+        <span class="n">batch</span> <span class="o">=</span> <span class="n">texts</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">i</span> <span class="o">+</span> <span class="n">batch_size</span><span class="p">]</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Embedding batch </span><span class="si">{</span><span class="n">i</span><span class="w"> </span><span class="o">//</span><span class="w"> </span><span class="n">batch_size</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">texts</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="o">//</span><span class="w"> </span><span class="n">batch_size</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">batch</span><span class="p">)</span><span class="si">}</span><span class="s2"> chunks)&quot;</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">embeddings</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="n">embedding_model</span><span class="p">,</span> <span class="nb">input</span><span class="o">=</span><span class="n">batch</span><span class="p">)</span>
+        <span class="n">batch_embeddings</span> <span class="o">=</span> <span class="p">[</span><span class="n">item</span><span class="o">.</span><span class="n">embedding</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">response</span><span class="o">.</span><span class="n">data</span><span class="p">]</span>
+        <span class="n">all_embeddings</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">batch_embeddings</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">all_embeddings</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;float32&quot;</span><span class="p">)</span></div>
+
+
+
+<span class="c1"># ---------------------------------------------------------------------------</span>
+<span class="c1"># FAISS index management</span>
+<span class="c1"># ---------------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="build_faiss_index">
+<a class="viewcode-back" href="../../api/ingest.html#aita_core.ingest.build_faiss_index">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">build_faiss_index</span><span class="p">(</span><span class="n">embeddings</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Build a FAISS index from embeddings.&quot;&quot;&quot;</span>
+    <span class="n">dim</span> <span class="o">=</span> <span class="n">embeddings</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">index</span> <span class="o">=</span> <span class="n">faiss</span><span class="o">.</span><span class="n">IndexFlatIP</span><span class="p">(</span><span class="n">dim</span><span class="p">)</span>
+    <span class="n">faiss</span><span class="o">.</span><span class="n">normalize_L2</span><span class="p">(</span><span class="n">embeddings</span><span class="p">)</span>
+    <span class="n">index</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">embeddings</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">index</span></div>
+
+
+
+<div class="viewcode-block" id="save_index">
+<a class="viewcode-back" href="../../api/ingest.html#aita_core.ingest.save_index">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">save_index</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">chunks</span><span class="p">,</span> <span class="n">faiss_dir</span><span class="p">,</span> <span class="n">docs_dir</span><span class="p">,</span> <span class="n">backup_dir</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Save FAISS index and chunk metadata, with backup of existing data.&quot;&quot;&quot;</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">faiss_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">docs_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">backup_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">index_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">faiss_dir</span><span class="p">,</span> <span class="s2">&quot;index.faiss&quot;</span><span class="p">)</span>
+    <span class="n">meta_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">faiss_dir</span><span class="p">,</span> <span class="s2">&quot;metadata.pkl&quot;</span><span class="p">)</span>
+    <span class="n">doc_jsonl</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">docs_dir</span><span class="p">,</span> <span class="s2">&quot;doc.jsonl&quot;</span><span class="p">)</span>
+    <span class="n">timestamp</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y%m</span><span class="si">%d</span><span class="s2">-%H%M&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">index_path</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Existing index found. Backing up...&quot;</span><span class="p">)</span>
+        <span class="n">bak</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">backup_dir</span><span class="p">,</span> <span class="n">timestamp</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">bak</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">shutil</span><span class="o">.</span><span class="n">copy2</span><span class="p">(</span><span class="n">index_path</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">bak</span><span class="p">,</span> <span class="s2">&quot;index.faiss&quot;</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">meta_path</span><span class="p">):</span>
+            <span class="n">shutil</span><span class="o">.</span><span class="n">copy2</span><span class="p">(</span><span class="n">meta_path</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">bak</span><span class="p">,</span> <span class="s2">&quot;metadata.pkl&quot;</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">doc_jsonl</span><span class="p">):</span>
+            <span class="n">shutil</span><span class="o">.</span><span class="n">copy2</span><span class="p">(</span><span class="n">doc_jsonl</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">bak</span><span class="p">,</span> <span class="s2">&quot;doc.jsonl&quot;</span><span class="p">))</span>
+
+    <span class="n">faiss</span><span class="o">.</span><span class="n">write_index</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">index_path</span><span class="p">)</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">meta_path</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">chunks</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+
+    <span class="n">save_docs_to_jsonl</span><span class="p">(</span><span class="n">chunks</span><span class="p">,</span> <span class="n">doc_jsonl</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Index saved to </span><span class="si">{</span><span class="n">faiss_dir</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">index</span><span class="o">.</span><span class="n">ntotal</span><span class="si">}</span><span class="s2"> vectors)&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Document records saved to </span><span class="si">{</span><span class="n">doc_jsonl</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+
+<span class="c1"># ---------------------------------------------------------------------------</span>
+<span class="c1"># Default collectors (standard directory layout)</span>
+<span class="c1"># ---------------------------------------------------------------------------</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_week_for</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">get_week_for_filename</span><span class="p">(</span>
+        <span class="n">filename</span><span class="p">,</span> <span class="n">config</span><span class="o">.</span><span class="n">topic_num_to_week</span><span class="p">,</span> <span class="n">config</span><span class="o">.</span><span class="n">hw_num_to_week</span><span class="p">,</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">lab_num_to_week</span><span class="p">,</span> <span class="n">config</span><span class="o">.</span><span class="n">study_guide_to_week</span><span class="p">,</span>
+    <span class="p">)</span>
+
+
+<div class="viewcode-block" id="collect_syllabus">
+<a class="viewcode-back" href="../../api/ingest.html#aita_core.ingest.collect_syllabus">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">collect_syllabus</span><span class="p">(</span><span class="n">config_or_dir</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Load syllabus from standard location.</span>
+
+<span class="sd">    Accepts either a CourseConfig or a course_materials_dir path</span>
+<span class="sd">    for backwards compatibility.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">config_or_dir</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">course_materials_dir</span> <span class="o">=</span> <span class="n">config_or_dir</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">course_materials_dir</span> <span class="o">=</span> <span class="n">config_or_dir</span><span class="o">.</span><span class="n">course_materials_dir</span>
+    <span class="n">docs</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">tex_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">course_materials_dir</span><span class="p">,</span> <span class="s2">&quot;syllabus&quot;</span><span class="p">,</span> <span class="s2">&quot;Syllabus.tex&quot;</span><span class="p">)</span>
+    <span class="n">pdf_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">course_materials_dir</span><span class="p">,</span> <span class="s2">&quot;syllabus&quot;</span><span class="p">,</span> <span class="s2">&quot;Syllabus.pdf&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">tex_path</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  Loading Syllabus (LaTeX, week 1)&quot;</span><span class="p">)</span>
+        <span class="n">docs</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">load_tex</span><span class="p">(</span><span class="n">tex_path</span><span class="p">,</span> <span class="s2">&quot;Syllabus&quot;</span><span class="p">,</span> <span class="n">max_week</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+    <span class="k">elif</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">pdf_path</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  Loading Syllabus (PDF, week 1)&quot;</span><span class="p">)</span>
+        <span class="n">docs</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">load_pdf</span><span class="p">(</span><span class="n">pdf_path</span><span class="p">,</span> <span class="s2">&quot;Syllabus&quot;</span><span class="p">,</span> <span class="n">max_week</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">docs</span></div>
+
+
+
+<div class="viewcode-block" id="collect_handouts">
+<a class="viewcode-back" href="../../api/ingest.html#aita_core.ingest.collect_handouts">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">collect_handouts</span><span class="p">(</span><span class="n">config</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Load handout PDFs from Handouts/Handouts/.&quot;&quot;&quot;</span>
+    <span class="n">docs</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">handouts_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">course_materials_dir</span><span class="p">,</span> <span class="s2">&quot;Handouts&quot;</span><span class="p">,</span> <span class="s2">&quot;Handouts&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">handouts_dir</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Warning: </span><span class="si">{</span><span class="n">handouts_dir</span><span class="si">}</span><span class="s2"> not found&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">docs</span>
+    <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">handouts_dir</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">filename</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.pdf&quot;</span><span class="p">):</span>
+            <span class="k">continue</span>
+        <span class="n">file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">handouts_dir</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+        <span class="n">label</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Handout: </span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">week</span> <span class="o">=</span> <span class="n">_week_for</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Loading </span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s2"> (week </span><span class="si">{</span><span class="n">week</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+        <span class="n">docs</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">load_pdf</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">max_week</span><span class="o">=</span><span class="n">week</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">docs</span></div>
+
+
+
+<div class="viewcode-block" id="collect_homework">
+<a class="viewcode-back" href="../../api/ingest.html#aita_core.ingest.collect_homework">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">collect_homework</span><span class="p">(</span><span class="n">config</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Load homework PDFs from Homework handouts/Homework handouts/, skipping solutions.&quot;&quot;&quot;</span>
+    <span class="n">docs</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">hw_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">course_materials_dir</span><span class="p">,</span> <span class="s2">&quot;Homework handouts&quot;</span><span class="p">,</span> <span class="s2">&quot;Homework handouts&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">hw_dir</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Warning: </span><span class="si">{</span><span class="n">hw_dir</span><span class="si">}</span><span class="s2"> not found&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">docs</span>
+    <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">hw_dir</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">filename</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.pdf&quot;</span><span class="p">):</span>
+            <span class="k">continue</span>
+        <span class="k">if</span> <span class="s2">&quot;solution&quot;</span> <span class="ow">in</span> <span class="n">filename</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Skipping (solution): </span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">continue</span>
+        <span class="n">file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">hw_dir</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+        <span class="n">label</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Homework: </span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">week</span> <span class="o">=</span> <span class="n">_week_for</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Loading </span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s2"> (week </span><span class="si">{</span><span class="n">week</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+        <span class="n">docs</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">load_pdf</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">max_week</span><span class="o">=</span><span class="n">week</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">docs</span></div>
+
+
+
+<div class="viewcode-block" id="collect_slides">
+<a class="viewcode-back" href="../../api/ingest.html#aita_core.ingest.collect_slides">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">collect_slides</span><span class="p">(</span><span class="n">config</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Load slide content from Slides/Slides/&lt;topic&gt;/ (content.tex or Notes.pdf).&quot;&quot;&quot;</span>
+    <span class="n">docs</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">slides_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">course_materials_dir</span><span class="p">,</span> <span class="s2">&quot;Slides&quot;</span><span class="p">,</span> <span class="s2">&quot;Slides&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">slides_dir</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Warning: </span><span class="si">{</span><span class="n">slides_dir</span><span class="si">}</span><span class="s2"> not found&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">docs</span>
+    <span class="k">for</span> <span class="n">topic_name</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">slides_dir</span><span class="p">)):</span>
+        <span class="n">topic_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">slides_dir</span><span class="p">,</span> <span class="n">topic_name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">topic_path</span><span class="p">):</span>
+            <span class="k">continue</span>
+        <span class="n">label</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Slides: </span><span class="si">{</span><span class="n">topic_name</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">week</span> <span class="o">=</span> <span class="n">_week_for</span><span class="p">(</span><span class="n">topic_name</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
+        <span class="n">content_tex</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">topic_path</span><span class="p">,</span> <span class="s2">&quot;content.tex&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">content_tex</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Loading </span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s2"> (LaTeX, week </span><span class="si">{</span><span class="n">week</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+            <span class="n">docs</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">load_tex</span><span class="p">(</span><span class="n">content_tex</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">max_week</span><span class="o">=</span><span class="n">week</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">notes_pdf</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">topic_path</span><span class="p">,</span> <span class="s2">&quot;Notes.pdf&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">notes_pdf</span><span class="p">):</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Loading </span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s2"> (PDF, week </span><span class="si">{</span><span class="n">week</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+                <span class="n">docs</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">load_pdf</span><span class="p">(</span><span class="n">notes_pdf</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">max_week</span><span class="o">=</span><span class="n">week</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">docs</span></div>
+
+
+
+<span class="c1"># ---------------------------------------------------------------------------</span>
+<span class="c1"># Ingestion pipeline runner</span>
+<span class="c1"># ---------------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="run_ingestion">
+<a class="viewcode-back" href="../../api/ingest.html#aita_core.ingest.run_ingestion">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">run_ingestion</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">collectors</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Run the full document ingestion pipeline.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        config: CourseConfig instance.</span>
+<span class="sd">        collectors: Optional list of (name, callable) pairs. Each callable</span>
+<span class="sd">            receives config and returns a list of docs. If None, uses</span>
+<span class="sd">            default collectors for the standard directory layout.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">collectors</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">collectors</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">(</span><span class="s2">&quot;lecture handouts&quot;</span><span class="p">,</span> <span class="n">collect_handouts</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;homework questions&quot;</span><span class="p">,</span> <span class="n">collect_homework</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;slide content&quot;</span><span class="p">,</span> <span class="n">collect_slides</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;syllabus&quot;</span><span class="p">,</span> <span class="n">collect_syllabus</span><span class="p">),</span>
+        <span class="p">]</span>
+        <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="s2">&quot;textbook_url&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="s2">&quot;textbook_chapter_to_week&quot;</span><span class="p">,</span> <span class="p">{}):</span>
+            <span class="n">collectors</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s2">&quot;textbook&quot;</span><span class="p">,</span> <span class="n">collect_wikibook</span><span class="p">))</span>
+
+    <span class="n">total</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">collectors</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="mi">60</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;AITA </span><span class="si">{</span><span class="n">config</span><span class="o">.</span><span class="n">course_id</span><span class="si">}</span><span class="s2"> Document Ingestion Pipeline&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="mi">60</span><span class="p">)</span>
+
+    <span class="n">all_docs</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">collector_fn</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">collectors</span><span class="p">,</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">[</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">total</span><span class="si">}</span><span class="s2">] Collecting </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">...&quot;</span><span class="p">)</span>
+        <span class="n">all_docs</span> <span class="o">+=</span> <span class="n">collector_fn</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">all_docs</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">No documents found. Check course_materials directory.&quot;</span><span class="p">)</span>
+        <span class="k">return</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Total documents loaded: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">all_docs</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="n">chunks</span> <span class="o">=</span> <span class="n">chunk_documents</span><span class="p">(</span><span class="n">all_docs</span><span class="p">,</span> <span class="n">config</span><span class="o">.</span><span class="n">chunk_size</span><span class="p">,</span> <span class="n">config</span><span class="o">.</span><span class="n">chunk_overlap</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Total chunks after splitting: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">chunks</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Generating embeddings with </span><span class="si">{</span><span class="n">config</span><span class="o">.</span><span class="n">embedding_model</span><span class="si">}</span><span class="s2">...&quot;</span><span class="p">)</span>
+    <span class="n">texts</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">chunks</span><span class="p">]</span>
+    <span class="n">embeddings</span> <span class="o">=</span> <span class="n">get_embeddings</span><span class="p">(</span><span class="n">texts</span><span class="p">,</span> <span class="n">config</span><span class="o">.</span><span class="n">embedding_model</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Building FAISS index...&quot;</span><span class="p">)</span>
+    <span class="n">index</span> <span class="o">=</span> <span class="n">build_faiss_index</span><span class="p">(</span><span class="n">embeddings</span><span class="p">)</span>
+    <span class="n">save_index</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">chunks</span><span class="p">,</span> <span class="n">config</span><span class="o">.</span><span class="n">faiss_db_dir</span><span class="p">,</span> <span class="n">config</span><span class="o">.</span><span class="n">docs_dir</span><span class="p">,</span> <span class="n">config</span><span class="o">.</span><span class="n">backup_dir</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Done! Vector store is ready.&quot;</span><span class="p">)</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, UMN Choi Lab.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

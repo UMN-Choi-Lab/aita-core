@@ -2,6 +2,8 @@
 Admin panel for AITA.
 """
 
+import json
+
 import streamlit as st
 import pandas as pd
 from aita_core.db import (
@@ -44,8 +46,8 @@ def admin_dashboard():
     st.markdown("---")
 
     # --- Tabs ---
-    tab_history, tab_feedback, tab_requests = st.tabs([
-        "Interaction History", "Feedback", "Feature Requests",
+    tab_history, tab_feedback, tab_requests, tab_settings = st.tabs([
+        "Interaction History", "Feedback", "Feature Requests", "Course Settings",
     ])
 
     # --- Interaction History ---
@@ -134,6 +136,10 @@ def admin_dashboard():
                             st.success(f"Updated to {new_status}")
                             st.rerun()
 
+    # --- Course Settings ---
+    with tab_settings:
+        admin_settings()
+
     # --- Sidebar ---
     with st.sidebar:
         st.title("Admin Panel")
@@ -144,6 +150,177 @@ def admin_dashboard():
             st.session_state.admin_authenticated = False
             st.session_state.page = "chat"
             st.rerun()
+
+
+def _dict_to_json(d, int_keys=False):
+    """Convert dict to formatted JSON string, with int keys as strings for display."""
+    if int_keys:
+        d = {str(k): v for k, v in sorted(d.items(), key=lambda x: int(x[0]))}
+    return json.dumps(d, indent=2)
+
+
+def _parse_json_dict(text, int_keys=False):
+    """Parse JSON text to dict, optionally converting keys to int."""
+    d = json.loads(text)
+    if int_keys:
+        d = {int(k): v for k, v in d.items()}
+    return d
+
+
+def admin_settings():
+    cfg = get_config()
+    st.subheader("Course Settings")
+    st.caption("Changes are saved to disk and persist across restarts.")
+
+    with st.form("settings_form"):
+        # --- Course Identity ---
+        st.markdown("#### Course Identity")
+        course_name = st.text_input("Course Name", value=cfg.course_name)
+        course_short_name = st.text_input("Short Name", value=cfg.course_short_name)
+        course_description = st.text_area(
+            "Description (shown on login page)", value=cfg.course_description, height=80,
+        )
+
+        st.markdown("---")
+
+        # --- System Prompt ---
+        st.markdown("#### System Prompt")
+        system_prompt = st.text_area("System Prompt", value=cfg.system_prompt, height=300)
+
+        st.markdown("---")
+
+        # --- LLM Settings ---
+        st.markdown("#### LLM Settings")
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            llm_model = st.text_input("LLM Model", value=cfg.llm_model)
+        with col2:
+            llm_temperature = st.number_input(
+                "Temperature", value=float(cfg.llm_temperature),
+                min_value=0.0, max_value=2.0, step=0.1,
+            )
+        with col3:
+            retrieval_k = st.number_input(
+                "Retrieval K", value=int(cfg.retrieval_k),
+                min_value=1, max_value=20, step=1,
+            )
+
+        col4, col5, col6 = st.columns(3)
+        with col4:
+            chunk_size = st.number_input(
+                "Chunk Size", value=int(cfg.chunk_size),
+                min_value=256, max_value=8192, step=256,
+            )
+        with col5:
+            chunk_overlap = st.number_input(
+                "Chunk Overlap", value=int(cfg.chunk_overlap),
+                min_value=0, max_value=2048, step=64,
+            )
+        with col6:
+            embedding_model = st.text_input("Embedding Model", value=cfg.embedding_model)
+
+        st.caption(
+            "Changes to embedding model, chunk size, and chunk overlap "
+            "require re-ingestion of documents to take effect."
+        )
+
+        st.markdown("---")
+
+        # --- Textbook ---
+        st.markdown("#### Textbook")
+        textbook_url = st.text_input("Textbook URL", value=cfg.textbook_url)
+        textbook_ch_json = st.text_area(
+            "Chapter → Week mapping (JSON)",
+            value=json.dumps(cfg.textbook_chapter_to_week, indent=2),
+            height=200,
+        )
+
+        st.markdown("---")
+
+        # --- Week Schedule ---
+        st.markdown("#### Week Schedule")
+        week_topics_json = st.text_area(
+            "Week Topics — {week_number: [topic1, topic2, ...]}",
+            value=_dict_to_json(cfg.week_topics, int_keys=True),
+            height=300,
+        )
+
+        st.markdown("---")
+
+        # --- Content Mappings ---
+        st.markdown("#### Content Mappings")
+        st.caption(
+            "These control which week each piece of content is available. "
+            "Changes to topic/lab mappings require re-ingestion."
+        )
+        col_m1, col_m2 = st.columns(2)
+        with col_m1:
+            hw_json = st.text_area(
+                "HW → Week — {hw_num: week}",
+                value=_dict_to_json(cfg.hw_num_to_week, int_keys=True),
+                height=200,
+            )
+        with col_m2:
+            topic_json = st.text_area(
+                "Topic → Week — {topic_num: week}",
+                value=_dict_to_json(cfg.topic_num_to_week, int_keys=True),
+                height=200,
+            )
+
+        col_m3, col_m4 = st.columns(2)
+        with col_m3:
+            lab_json = st.text_area(
+                "Lab → Week — {lab_num: week}",
+                value=_dict_to_json(cfg.lab_num_to_week, int_keys=True),
+                height=150,
+            )
+        with col_m4:
+            study_json = st.text_area(
+                "Study Guide → Week — {name: week}",
+                value=json.dumps(cfg.study_guide_to_week, indent=2),
+                height=150,
+            )
+
+        st.markdown("---")
+
+        # --- Example Prompts ---
+        st.markdown("#### Example Prompts")
+        example_json = st.text_area(
+            "Example Prompts by Week — {week: [prompt1, prompt2, ...]}",
+            value=_dict_to_json(cfg.example_prompts, int_keys=True),
+            height=300,
+        )
+
+        submitted = st.form_submit_button("Save Settings", type="primary")
+
+    if submitted:
+        try:
+            overrides = {
+                "course_name": course_name,
+                "course_short_name": course_short_name,
+                "course_description": course_description,
+                "system_prompt": system_prompt,
+                "llm_model": llm_model,
+                "llm_temperature": llm_temperature,
+                "retrieval_k": retrieval_k,
+                "chunk_size": chunk_size,
+                "chunk_overlap": chunk_overlap,
+                "embedding_model": embedding_model,
+                "textbook_url": textbook_url,
+                "textbook_chapter_to_week": json.loads(textbook_ch_json),
+                "week_topics": _parse_json_dict(week_topics_json, int_keys=True),
+                "hw_num_to_week": _parse_json_dict(hw_json, int_keys=True),
+                "topic_num_to_week": _parse_json_dict(topic_json, int_keys=True),
+                "lab_num_to_week": _parse_json_dict(lab_json, int_keys=True),
+                "study_guide_to_week": json.loads(study_json),
+                "example_prompts": _parse_json_dict(example_json, int_keys=True),
+            }
+            cfg.save_overrides(overrides)
+            st.success("Settings saved! Changes take effect immediately (except embedding/chunk settings).")
+        except json.JSONDecodeError as e:
+            st.error(f"Invalid JSON: {e}")
+        except (ValueError, TypeError) as e:
+            st.error(f"Invalid value: {e}")
 
 
 def admin_page():

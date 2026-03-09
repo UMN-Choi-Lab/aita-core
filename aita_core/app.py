@@ -323,6 +323,8 @@ def chat_page():
                                     mime="application/pdf",
                                     key=f"dl_{hash(resolved)}_{hash(user_input)}",
                                 )
+                            elif src["file_path"].startswith("http"):
+                                st.markdown(f"- [{label}]({src['file_path']})")
                             else:
                                 st.markdown(f"- {label}")
 
