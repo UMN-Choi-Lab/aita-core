@@ -31,7 +31,6 @@ import datetime
 import numpy as np
 import faiss
 from openai import OpenAI
-from pdfminer.high_level import extract_text
 
 from aita_core.utils import save_docs_to_jsonl
 
@@ -82,19 +81,31 @@ def get_week_for_filename(filename, topic_num_to_week, hw_num_to_week,
 # Text extraction
 # ---------------------------------------------------------------------------
 
-def clean_pdf_text(text):
-    text = text.replace("\x0c", " ")
-    text = text.replace("\n", " ")
-    text = re.sub(r"\s{2,}", " ", text)
-    return text.strip()
+def _extract_pdf_text(file_path):
+    """Extract text from PDF using pymupdf (preferred) or pdfminer (fallback)."""
+    try:
+        import pymupdf
+        doc = pymupdf.open(file_path)
+        pages = []
+        for page in doc:
+            pages.append(page.get_text("text"))
+        doc.close()
+        return "\n".join(pages)
+    except ImportError:
+        from pdfminer.high_level import extract_text
+        text = extract_text(file_path)
+        # pdfminer cleanup: collapse whitespace for readability
+        text = text.replace("\x0c", " ")
+        text = text.replace("\n", " ")
+        text = re.sub(r"\s{2,}", " ", text)
+        return text.strip()
 
 
 def load_pdf(file_path, source_label, max_week=1):
-    text = extract_text(file_path)
-    text = clean_pdf_text(text)
-    if not text:
+    text = _extract_pdf_text(file_path)
+    if not text or not text.strip():
         return []
-    return [{"text": text, "metadata": {"source": file_path, "source_label": source_label, "max_week": max_week}}]
+    return [{"text": text.strip(), "metadata": {"source": file_path, "source_label": source_label, "max_week": max_week}}]
 
 
 def load_tex(file_path, source_label, max_week=1):

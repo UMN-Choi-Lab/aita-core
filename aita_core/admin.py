@@ -16,7 +16,27 @@ from aita_core.config import get_config
 def check_admin_auth():
     if "admin_authenticated" not in st.session_state:
         st.session_state.admin_authenticated = False
+
+    # Auto-authenticate if user's Google email is in admin_emails
+    if not st.session_state.admin_authenticated:
+        cfg = get_config()
+        email = st.session_state.get("student_email", "")
+        if email and cfg.admin_emails and email in cfg.admin_emails:
+            st.session_state.admin_authenticated = True
+
     return st.session_state.admin_authenticated
+
+
+def is_admin_user():
+    """Check if the current user is an admin (without requiring explicit auth)."""
+    cfg = get_config()
+    email = st.session_state.get("student_email", "")
+    if email and cfg.admin_emails and email in cfg.admin_emails:
+        return True
+    # Fallback: anyone can access admin if no admin_emails configured (password-based)
+    if not cfg.admin_emails:
+        return True
+    return False
 
 
 def admin_login():
@@ -172,6 +192,24 @@ def admin_settings():
     st.subheader("Course Settings")
     st.caption("Changes are saved to disk and persist across restarts.")
 
+    # --- Quick toggles (outside form for immediate effect) ---
+    st.markdown("#### Semester & Current Week")
+    col_sem1, col_sem2 = st.columns(2)
+    with col_sem1:
+        auto_week = cfg.get_current_week()
+        st.markdown(f"**Auto-detected week:** {auto_week}")
+    with col_sem2:
+        new_test_mode = st.checkbox(
+            "Test Mode (show week slider in chat sidebar)",
+            value=cfg.test_mode,
+            key="test_mode_toggle",
+        )
+        if new_test_mode != cfg.test_mode:
+            cfg.save_overrides({"test_mode": new_test_mode})
+            st.rerun()
+
+    st.markdown("---")
+
     with st.form("settings_form"):
         # --- Course Identity ---
         st.markdown("#### Course Identity")
@@ -179,6 +217,16 @@ def admin_settings():
         course_short_name = st.text_input("Short Name", value=cfg.course_short_name)
         course_description = st.text_area(
             "Description (shown on login page)", value=cfg.course_description, height=80,
+        )
+
+        st.markdown("---")
+
+        # --- Semester Start ---
+        st.markdown("#### Semester Start")
+        semester_start = st.text_input(
+            "Semester Start Date (YYYY-MM-DD)",
+            value=cfg.semester_start,
+            help="First day of week 1. Current week is auto-computed from this date.",
         )
 
         st.markdown("---")
@@ -247,6 +295,32 @@ def admin_settings():
 
         st.markdown("---")
 
+        # --- Exam Scope ---
+        st.markdown("#### Exam Scope")
+        st.caption(
+            "Defines which weeks each exam covers. Used to scope study guides "
+            "and exam review responses. Click 'Auto-detect' to populate from "
+            "week topics, then adjust as needed."
+        )
+        exam_scope_default = json.dumps(cfg.exam_scope, indent=2) if cfg.exam_scope else "{}"
+        exam_scope_value = st.session_state.get("_exam_scope_json", exam_scope_default)
+        exam_scope_json = st.text_area(
+            'Exam Scope — {"Exam Name": {"week_start": N, "week_end": M}, ...}',
+            value=exam_scope_value,
+            height=150,
+            key="exam_scope_editor",
+        )
+        if cfg.exam_scope:
+            for exam_name, scope in sorted(cfg.exam_scope.items()):
+                topics = cfg.get_exam_topics(exam_name)
+                if topics:
+                    st.caption(
+                        f"**{exam_name}** (weeks {scope['week_start']}-{scope['week_end']}): "
+                        f"{', '.join(topics)}"
+                    )
+
+        st.markdown("---")
+
         # --- Content Mappings ---
         st.markdown("#### Content Mappings")
         st.caption(
@@ -299,6 +373,7 @@ def admin_settings():
                 "course_name": course_name,
                 "course_short_name": course_short_name,
                 "course_description": course_description,
+                "semester_start": semester_start,
                 "system_prompt": system_prompt,
                 "llm_model": llm_model,
                 "llm_temperature": llm_temperature,
@@ -313,14 +388,27 @@ def admin_settings():
                 "topic_num_to_week": _parse_json_dict(topic_json, int_keys=True),
                 "lab_num_to_week": _parse_json_dict(lab_json, int_keys=True),
                 "study_guide_to_week": json.loads(study_json),
+                "exam_scope": json.loads(exam_scope_json),
                 "example_prompts": _parse_json_dict(example_json, int_keys=True),
             }
             cfg.save_overrides(overrides)
+            # Clear auto-detect session state after save
+            st.session_state.pop("_exam_scope_json", None)
             st.success("Settings saved! Changes take effect immediately (except embedding/chunk settings).")
         except json.JSONDecodeError as e:
             st.error(f"Invalid JSON: {e}")
         except (ValueError, TypeError) as e:
             st.error(f"Invalid value: {e}")
+
+    # Auto-detect button (outside form so it can trigger rerun)
+    if st.button("Auto-detect Exam Scope from Week Topics"):
+        detected = cfg.auto_detect_exam_scope()
+        st.session_state["_exam_scope_json"] = json.dumps(detected, indent=2)
+        st.info(
+            f"Detected {len(detected)} exam(s): {', '.join(detected.keys())}. "
+            "Review above and click 'Save Settings' to apply."
+        )
+        st.rerun()
 
 
 def admin_page():

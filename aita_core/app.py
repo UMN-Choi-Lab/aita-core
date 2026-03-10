@@ -12,7 +12,7 @@ from streamlit.components.v1 import html as _st_html
 from aita_core.config import get_config
 from aita_core.rag import chat
 from aita_core.db import log_interaction, add_feedback, add_feature_request
-from aita_core.admin import admin_page
+from aita_core.admin import admin_page, is_admin_user
 
 
 def _set_auth_cookie(user_data: dict):
@@ -98,6 +98,7 @@ def _google_oauth_flow():
 
             st.session_state.authenticated = True
             st.session_state.student_id = email.split("@")[0]
+            st.session_state.student_email = email
             st.session_state.student_name = user_info.get("name", "")
             st.session_state._set_cookie = {
                 "name": user_info.get("name", ""),
@@ -188,14 +189,19 @@ def chat_page():
 
         st.markdown("---")
 
-        # Week selector for testing
-        st.subheader("Current Week")
-        st.session_state.current_week = st.slider(
-            "Set current week (for testing):",
-            min_value=1,
-            max_value=15,
-            value=st.session_state.current_week,
-        )
+        # Current week display
+        if cfg.test_mode:
+            st.subheader("Current Week (Test Mode)")
+            max_week = max(cfg.week_topics.keys()) if cfg.week_topics else 15
+            st.session_state.current_week = st.slider(
+                "Set current week:",
+                min_value=1,
+                max_value=max_week,
+                value=st.session_state.current_week,
+            )
+        else:
+            st.session_state.current_week = cfg.get_current_week()
+            st.subheader(f"Week {st.session_state.current_week}")
 
         covered = cfg.get_topics_covered(st.session_state.current_week)
         future = cfg.get_topics_not_covered(st.session_state.current_week)
@@ -251,9 +257,10 @@ def chat_page():
                     st.warning("Please provide a title.")
 
         st.markdown("---")
-        if st.button("Admin Panel"):
-            st.session_state.page = "admin"
-            st.rerun()
+        if is_admin_user():
+            if st.button("Admin Panel"):
+                st.session_state.page = "admin"
+                st.rerun()
         if st.button("Sign Out"):
             _delete_auth_cookie()
             for key in ["authenticated", "connected", "user_info", "oauth_id",
@@ -397,9 +404,11 @@ def main():
             email = cookie_data["email"]
             st.session_state.authenticated = True
             st.session_state.student_id = email.split("@")[0] if "@" in email else email
+            st.session_state.student_email = email
             st.session_state.student_name = cookie_data.get("name", "")
     if "current_week" not in st.session_state:
-        st.session_state.current_week = 1
+        cfg_init = get_config()
+        st.session_state.current_week = cfg_init.get_current_week()
     if "page" not in st.session_state:
         st.session_state.page = "chat"
     if "last_interaction_id" not in st.session_state:
