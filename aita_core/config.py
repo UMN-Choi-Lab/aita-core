@@ -77,6 +77,16 @@ class CourseConfig:
     # solutions are never ingested, so they cannot leak regardless).
     week_aware: bool = True
 
+    # Tell the model today's date, the current week and the full calendar.
+    # Deliberately INDEPENDENT of week_aware: a course can refuse to gate future
+    # topics (week_aware=False) and still need the assistant to know what week it
+    # is. Without this the model has no clock, denies having the syllabus, and
+    # asks the student what week it is.
+    inject_schedule: bool = True
+    # Optional free-text describing when the class meets, e.g.
+    # "Lectures are Monday; labs are Wednesday."
+    meeting_pattern: str = ""
+
     # Exam scope (auto-detected or manually set)
     # Format: {"Midterm 1": {"week_start": 1, "week_end": 7}, ...}
     exam_scope: dict = field(default_factory=dict)
@@ -255,3 +265,35 @@ def get_config() -> CourseConfig:
     if _config is None:
         raise RuntimeError("aita_core.set_config() must be called before use")
     return _config
+
+
+def discover_google_oauth(base_dir):
+    """Locate the OAuth client-secret file and validate the companion env vars.
+
+    Every course repo had this block copied verbatim into its config.py.
+    Returns (client_secret_path, cookie_key, redirect_uri); client_secret_path is
+    "" when OAuth is not fully configured, which makes the app fall back to
+    student-ID login rather than half-starting OAuth.
+    """
+    import glob as _glob
+    import os as _os
+    import sys as _sys
+
+    explicit = _os.getenv("GOOGLE_CLIENT_SECRET_FILE", "")
+    if explicit:
+        candidate = _os.path.join(base_dir, explicit)
+        matches = [candidate] if _os.path.exists(candidate) else []
+    else:
+        matches = _glob.glob(_os.path.join(base_dir, "client_secret*.json"))
+
+    cookie_key = _os.getenv("GOOGLE_COOKIE_KEY")
+    redirect_uri = _os.getenv("GOOGLE_REDIRECT_URI")
+
+    if matches and cookie_key and redirect_uri:
+        return matches[0], cookie_key, redirect_uri
+
+    if matches:
+        print("[WARN] Google OAuth: client_secret found but GOOGLE_COOKIE_KEY or "
+              "GOOGLE_REDIRECT_URI not set. Falling back to student ID login.",
+              file=_sys.stderr)
+    return "", (cookie_key or ""), (redirect_uri or "")

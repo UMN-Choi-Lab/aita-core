@@ -27,6 +27,26 @@ def _load_index():
             _chunks = pickle.load(f)
 
 
+SCHEDULE_INSTRUCTION = """
+CURRENT DATE AND SCHEDULE (authoritative — this is system-provided, not retrieved):
+Today is {today}. The class is in instructional Week {current_week}.
+This week's topic: {this_week}
+Next class meeting: {next_class}.{meeting_pattern}
+
+Full schedule:
+{rows}
+
+RULES FOR USING THIS:
+- You DO know today's date, the current week, and the full course calendar. Never
+  say you lack access to the schedule or syllabus, and never ask the student what
+  week it is — you were just told.
+- Answer "what are we doing this week / next class" directly from the table above.
+- For deadlines, grading, exam logistics or submission rules NOT shown above and
+  not present in the retrieved materials, say the syllabus did not surface that
+  detail and point the student to the course page. Do not invent a policy or date.
+"""
+
+
 WEEK_CONTEXT_INSTRUCTION = """
 IMPORTANT — WEEK-AWARE INSTRUCTION:
 The class is currently in Week {current_week}.
@@ -119,6 +139,38 @@ def _resolve_current_hw(cfg, current_week):
     return None
 
 
+
+def build_schedule_block(cfg, current_week, today=None):
+    """Date + week + full calendar. Independent of week_aware by design."""
+    from datetime import date as _date, timedelta as _timedelta
+
+    if not cfg.semester_start or not cfg.week_topics:
+        return ""
+    today = today or _date.today()
+    start = _date.fromisoformat(cfg.semester_start)  # Monday of week 1
+
+    rows = []
+    for wk, topics in sorted(cfg.week_topics.items()):
+        mon = start + _timedelta(days=7 * (wk - 1))
+        mark = "  <-- CURRENT WEEK" if wk == current_week else ""
+        rows.append(f"  Week {wk:>2} (week of {mon:%b %d}): {'; '.join(topics)}{mark}")
+
+    mon = start + _timedelta(days=7 * (current_week - 1))
+    upcoming = [mon + _timedelta(days=d) for d in range(7)
+                if mon + _timedelta(days=d) >= today]
+    next_class = f"{upcoming[0]:%A, %B %d}" if upcoming else f"{mon + _timedelta(days=7):%A, %B %d}"
+
+    pattern = f" {cfg.meeting_pattern}" if cfg.meeting_pattern else ""
+    return SCHEDULE_INSTRUCTION.format(
+        today=f"{today:%A, %B %d, %Y}",
+        current_week=current_week,
+        this_week="; ".join(cfg.week_topics.get(current_week, ["-"])),
+        next_class=next_class,
+        meeting_pattern=pattern,
+        rows="\n".join(rows),
+    )
+
+
 def build_system_prompt(current_week, has_context=True):
     """Build system prompt with week-awareness and exam scope."""
     cfg = get_config()
@@ -157,6 +209,14 @@ def build_system_prompt(current_week, has_context=True):
             prompt += "\n\n" + EXAM_SCOPE_INSTRUCTION.format(
                 exam_scope_text="\n".join(lines),
             )
+
+    if getattr(cfg, "inject_schedule", False):
+        try:
+            block = build_schedule_block(cfg, current_week)
+            if block:
+                prompt += "\n\n" + block
+        except Exception:
+            pass  # never break a reply over the schedule block
 
     # Warn when no context was retrieved
     if not has_context:

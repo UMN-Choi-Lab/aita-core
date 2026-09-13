@@ -1,4 +1,4 @@
-from aita_core.config import CourseConfig, set_config
+from aita_core.config import CourseConfig, set_config, discover_google_oauth
 
 
 def run(config: CourseConfig):
