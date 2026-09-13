@@ -30,19 +30,9 @@ import datetime
 
 import numpy as np
 import faiss
-from openai import OpenAI
 
 from aita_core.utils import save_docs_to_jsonl
-
-
-_client = None
-
-
-def _get_client():
-    global _client
-    if _client is None:
-        _client = OpenAI()
-    return _client
+from aita_core import providers
 
 
 # ---------------------------------------------------------------------------
@@ -236,17 +226,9 @@ def chunk_documents(docs, chunk_size=2048, overlap=256):
 # Embeddings
 # ---------------------------------------------------------------------------
 
-def get_embeddings(texts, embedding_model="text-embedding-3-large", batch_size=100):
-    """Call OpenAI embeddings API in batches. Returns numpy array."""
-    client = _get_client()
-    all_embeddings = []
-    for i in range(0, len(texts), batch_size):
-        batch = texts[i:i + batch_size]
-        print(f"  Embedding batch {i // batch_size + 1}/{(len(texts) - 1) // batch_size + 1} ({len(batch)} chunks)")
-        response = client.embeddings.create(model=embedding_model, input=batch)
-        batch_embeddings = [item.embedding for item in response.data]
-        all_embeddings.extend(batch_embeddings)
-    return np.array(all_embeddings, dtype="float32")
+def get_embeddings(texts, config):
+    """Embed texts via the configured provider. Returns float32 numpy array."""
+    return providers.embed_texts(config, texts)
 
 
 # ---------------------------------------------------------------------------
@@ -435,7 +417,7 @@ def run_ingestion(config, collectors=None):
 
     print(f"\nGenerating embeddings with {config.embedding_model}...")
     texts = [c["text"] for c in chunks]
-    embeddings = get_embeddings(texts, config.embedding_model)
+    embeddings = get_embeddings(texts, config)
 
     print("\nBuilding FAISS index...")
     index = build_faiss_index(embeddings)

@@ -3,6 +3,7 @@ Admin panel for AITA.
 """
 
 import json
+from datetime import datetime, timezone
 
 import streamlit as st
 import pandas as pd
@@ -11,6 +12,31 @@ from aita_core.db import (
     get_feature_requests, update_feature_request_status,
 )
 from aita_core.config import get_config
+
+# Timestamps are stored naive == UTC (the server runs UTC). Render them in US
+# Central so the teaching team reads local time. ZoneInfo handles the CST/CDT
+# switch automatically; needs the `tzdata` package on slim images (an aita-core
+# dependency), and falls back to a UTC label if the tz DB is somehow missing.
+try:
+    from zoneinfo import ZoneInfo
+    _CENTRAL = ZoneInfo("America/Chicago")
+except Exception:
+    _CENTRAL = None
+
+
+def _fmt_ct(ts):
+    """Format a stored (UTC) ISO timestamp as local US Central, e.g. '2026-09-09 11:39 CDT'."""
+    if not ts:
+        return ""
+    try:
+        dt = datetime.fromisoformat(ts)
+    except ValueError:
+        return ts[:16]
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=timezone.utc)
+    if _CENTRAL is not None:
+        return dt.astimezone(_CENTRAL).strftime("%Y-%m-%d %H:%M %Z")
+    return dt.strftime("%Y-%m-%d %H:%M UTC")
 
 
 def check_admin_auth():
@@ -90,7 +116,7 @@ def admin_dashboard():
             for ix in interactions:
                 with st.expander(
                     f"#{ix['id']} | {ix['student_id']} | Week {ix['week']} | "
-                    f"{ix['timestamp'][:16]} | "
+                    f"{_fmt_ct(ix['timestamp'])} | "
                     f"{'Rating: ' + str(ix['rating']) if ix['rating'] else 'Unrated'}"
                 ):
                     st.markdown("**Question:**")
@@ -113,7 +139,7 @@ def admin_dashboard():
                 if fb["rating"]:
                     rating_display = " | " + ("thumbs up" if fb["rating"] == 1 else "thumbs down")
                 with st.expander(
-                    f"#{fb['id']} | {fb['student_id']} | {fb['timestamp'][:16]}{rating_display}"
+                    f"#{fb['id']} | {fb['student_id']} | {_fmt_ct(fb['timestamp'])}{rating_display}"
                 ):
                     if fb["comment"]:
                         st.markdown(f"**Comment:** {fb['comment']}")
@@ -139,7 +165,7 @@ def admin_dashboard():
         else:
             for req in requests:
                 with st.expander(
-                    f"#{req['id']} [{req['status']}] {req['title']} — {req['student_id']} | {req['timestamp'][:16]}"
+                    f"#{req['id']} [{req['status']}] {req['title']} — {req['student_id']} | {_fmt_ct(req['timestamp'])}"
                 ):
                     if req["description"]:
                         st.markdown(req["description"])

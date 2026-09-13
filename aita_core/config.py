@@ -13,13 +13,15 @@ INT_KEY_DICT_FIELDS = frozenset({
 EDITABLE_FIELDS = [
     "course_name", "course_short_name", "course_description",
     "system_prompt",
-    "semester_start", "test_mode",
+    "semester_start", "break_weeks", "test_mode", "week_aware",
     "week_topics", "topic_num_to_week", "hw_num_to_week",
     "lab_num_to_week", "study_guide_to_week",
     "exam_scope",
     "example_prompts",
     "textbook_url", "textbook_chapter_to_week",
-    "llm_model", "llm_temperature", "retrieval_k",
+    "llm_provider", "gcp_project", "gcp_location",
+    "llm_model", "llm_temperature", "llm_max_output_tokens",
+    "retrieval_k", "retrieval_min_score",
     "chunk_size", "chunk_overlap", "embedding_model",
 ]
 
@@ -62,8 +64,18 @@ class CourseConfig:
     # Semester start date (ISO format, e.g. "2025-01-21") for auto-computing current week
     semester_start: str = ""
 
+    # Break weeks: list of naive (calendar) week numbers that are non-instructional
+    # (e.g., spring break). get_current_week() subtracts these from the count.
+    break_weeks: list = field(default_factory=list)
+
     # Test mode: when True, show week slider in chat sidebar for testing
     test_mode: bool = False
+
+    # Week-aware gating: when True, the assistant refuses to discuss lecture
+    # topics from weeks beyond current_week and retrieval is filtered by week.
+    # Set False to let students ask about any topic at any time (homework
+    # solutions are never ingested, so they cannot leak regardless).
+    week_aware: bool = True
 
     # Exam scope (auto-detected or manually set)
     # Format: {"Midterm 1": {"week_start": 1, "week_end": 7}, ...}
@@ -74,13 +86,24 @@ class CourseConfig:
     textbook_chapter_to_week: dict = field(default_factory=dict)
 
     # LLM / embedding settings
+    # llm_provider selects the backend: "openai" (default) or "gemini".
+    # For "gemini", set gcp_project/gcp_location to use Vertex AI via Application
+    # Default Credentials (ADC); leave gcp_project empty to use the Gemini
+    # Developer API (GEMINI_API_KEY / google-genai env config).
+    llm_provider: str = "openai"
+    gcp_project: str = ""
+    gcp_location: str = "us-central1"
     embedding_model: str = "text-embedding-3-large"
     embedding_dimensions: int = 3072
     llm_model: str = "gpt-4o-mini"
     llm_temperature: float = 0
+    llm_max_output_tokens: int = 0  # 0 = provider default (no explicit cap)
     chunk_size: int = 2048
     chunk_overlap: int = 256
     retrieval_k: int = 5
+    # Drop retrieved chunks whose cosine score is below this (0.0 = keep all).
+    # Helps avoid showing irrelevant "sources" on off-topic / refusal turns.
+    retrieval_min_score: float = 0.0
 
     @property
     def google_auth_enabled(self) -> bool:
@@ -94,8 +117,9 @@ class CourseConfig:
         return result
 
     def get_current_week(self) -> int:
-        """Compute current week from today's date and semester_start.
+        """Compute current instructional week from today's date and semester_start.
 
+        Subtracts any break weeks (e.g., spring break) that have already elapsed.
         Returns 1 if semester_start is not set or date is before semester start.
         Clamps to max week in week_topics.
         """
@@ -108,9 +132,11 @@ class CourseConfig:
         today = datetime.date.today()
         if today < start:
             return 1
-        week = (today - start).days // 7 + 1
+        naive_week = (today - start).days // 7 + 1
+        breaks_elapsed = sum(1 for bw in self.break_weeks if bw <= naive_week)
+        week = naive_week - breaks_elapsed
         max_week = max(self.week_topics.keys()) if self.week_topics else 15
-        return min(week, max_week)
+        return min(max(week, 1), max_week)
 
     def get_topics_covered(self, current_week):
         covered = []

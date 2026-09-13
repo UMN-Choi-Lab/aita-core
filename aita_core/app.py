@@ -5,14 +5,32 @@ Parameterized by CourseConfig — no course-specific strings hardcoded.
 
 import os
 import sys
+import hashlib
 import jwt
 import streamlit as st
 from streamlit.components.v1 import html as _st_html
 
 from aita_core.config import get_config
 from aita_core.rag import chat
-from aita_core.db import log_interaction, add_feedback, add_feature_request
+from aita_core.db import log_interaction, rate_interaction, add_feedback, add_feature_request
 from aita_core.admin import admin_page, is_admin_user
+
+
+def _anon_student_id(cfg, ident):
+    """Return the id written to the interaction logs.
+
+    Teaching team (emails in cfg.admin_emails) keep their real internet id so
+    their own activity stays legible in the admin panel. Every other student is
+    stored under a stable, non-identifying token derived from a secret salt
+    (AITA_ANON_SALT), so the logs hold no student identity and cannot be traced
+    back to a person by anyone holding the database.
+    """
+    internet_id = ident.split("@")[0] if "@" in ident else ident
+    email = ident if "@" in ident else f"{internet_id}@umn.edu"
+    if email in (cfg.admin_emails or []):
+        return internet_id
+    salt = os.environ.get("AITA_ANON_SALT", "")
+    return "anon_" + hashlib.sha256(f"{salt}:{internet_id.lower()}".encode()).hexdigest()[:16]
 
 
 def _set_auth_cookie(user_data: dict):
@@ -97,7 +115,7 @@ def _google_oauth_flow():
                 return
 
             st.session_state.authenticated = True
-            st.session_state.student_id = email.split("@")[0]
+            st.session_state.student_id = _anon_student_id(cfg, email)
             st.session_state.student_email = email
             st.session_state.student_name = user_info.get("name", "")
             st.session_state._set_cookie = {
@@ -142,6 +160,83 @@ def _google_oauth_flow():
 """, unsafe_allow_html=True)
 
 
+_POSITIVE_REASONS = [
+    ("concept", "Helped me understand the concept"),
+    ("guidance", "Guided me without giving the answer"),
+    ("sources", "Pointed me to useful course materials"),
+    ("other", "Other"),
+]
+
+_NEGATIVE_REASONS = [
+    ("incorrect", "Response was incorrect or misleading"),
+    ("vague", "Too vague — needed more specific guidance"),
+    ("misunderstood", "Didn't understand my question"),
+    ("wanted_answer", "I wanted a more direct answer"),
+    ("other", "Other"),
+]
+
+
+def _render_inline_feedback(interaction_id, msg_index):
+    """Render inline feedback buttons below an assistant message."""
+    fb_key = f"fb_{interaction_id}"
+    already_rated = st.session_state.feedback_given.get(interaction_id)
+
+    if already_rated:
+        st.caption("Thanks for your feedback!")
+        return
+
+    # Check if user already clicked thumbs up/down (pending reason selection)
+    rating_state_key = f"fb_rating_{interaction_id}"
+    current_rating = st.session_state.get(rating_state_key)
+
+    if current_rating is None:
+        # Tier 1: Show thumbs up/down
+        cols = st.columns([1, 1, 6])
+        with cols[0]:
+            if st.button("👍", key=f"{fb_key}_up", help="Helpful"):
+                st.session_state[rating_state_key] = 1
+                rate_interaction(interaction_id, 1)
+                st.rerun()
+        with cols[1]:
+            if st.button("👎", key=f"{fb_key}_down", help="Not helpful"):
+                st.session_state[rating_state_key] = -1
+                rate_interaction(interaction_id, -1)
+                st.rerun()
+    else:
+        # Tier 2: Show reason options
+        reasons = _POSITIVE_REASONS if current_rating == 1 else _NEGATIVE_REASONS
+        prompt = "What made this helpful?" if current_rating == 1 else "What was the issue?"
+        reason_labels = [r[1] for r in reasons]
+        reason_keys = [r[0] for r in reasons]
+
+        selected = st.radio(
+            prompt,
+            reason_labels,
+            key=f"{fb_key}_reason",
+            horizontal=True,
+        )
+        reason_idx = reason_labels.index(selected)
+        reason_code = reason_keys[reason_idx]
+
+        comment = st.text_input(
+            "Anything else? (optional)",
+            key=f"{fb_key}_comment",
+            label_visibility="collapsed",
+            placeholder="Anything else? (optional)",
+        )
+
+        if st.button("Submit", key=f"{fb_key}_submit"):
+            add_feedback(
+                st.session_state.student_id,
+                interaction_id,
+                current_rating,
+                comment.strip() if comment else "",
+                reason=reason_code,
+            )
+            st.session_state.feedback_given[interaction_id] = True
+            st.rerun()
+
+
 def login_page():
     cfg = get_config()
     st.title(cfg.course_name)
@@ -155,7 +250,7 @@ def login_page():
         if st.button("Sign In"):
             if student_id.strip():
                 st.session_state.authenticated = True
-                st.session_state.student_id = student_id.strip()
+                st.session_state.student_id = _anon_student_id(cfg, student_id.strip())
                 st.rerun()
             else:
                 st.error("Please enter a valid student ID.")
@@ -210,7 +305,7 @@ def chat_page():
             for t in covered:
                 st.markdown(f"- {t}")
 
-        if future:
+        if cfg.week_aware and future:
             with st.expander("Topics not yet covered"):
                 for t in future:
                     st.markdown(f"- {t}")
@@ -226,22 +321,7 @@ def chat_page():
 
         st.markdown("---")
 
-        # Feedback & Feature Request section
-        with st.expander("Give Feedback"):
-            fb_comment = st.text_area("Your feedback:", key="fb_comment", height=80)
-            fb_rating = st.radio("Rating:", ["Positive", "Negative"], horizontal=True, key="fb_rating")
-            if st.button("Submit Feedback", key="fb_submit"):
-                if fb_comment.strip():
-                    add_feedback(
-                        st.session_state.student_id,
-                        st.session_state.last_interaction_id,
-                        1 if fb_rating == "Positive" else -1,
-                        fb_comment.strip(),
-                    )
-                    st.success("Thanks for your feedback!")
-                else:
-                    st.warning("Please write a comment.")
-
+        # Feature Request section (feedback is now inline in chat)
         with st.expander("Request a Feature"):
             fr_title = st.text_input("Feature title:", key="fr_title")
             fr_desc = st.text_area("Description:", key="fr_desc", height=80)
@@ -278,10 +358,40 @@ def chat_page():
         "with course materials, lecture notes, and your instructor."
     )
 
-    # Display chat history
-    for msg in st.session_state.chat_history:
+    # Initialize feedback tracking
+    if "feedback_given" not in st.session_state:
+        st.session_state.feedback_given = {}  # interaction_id -> True
+
+    # Display chat history with inline feedback
+    for i, msg in enumerate(st.session_state.chat_history):
         with st.chat_message(msg["role"]):
             st.markdown(msg["content"])
+            # Show sources and inline feedback for assistant messages
+            if msg["role"] == "assistant":
+                sources = msg.get("sources", [])
+                if sources:
+                    with st.expander("Sources referenced"):
+                        for src in sources:
+                            label = src["label"]
+                            resolved = resolve_file_path(src["file_path"])
+                            if resolved:
+                                fname = os.path.basename(resolved)
+                                with open(resolved, "rb") as f:
+                                    file_bytes = f.read()
+                                st.download_button(
+                                    label=f"Download: {label}",
+                                    data=file_bytes,
+                                    file_name=fname,
+                                    mime="application/pdf",
+                                    key=f"dl_{i}_{hash(resolved)}",
+                                )
+                            elif src["file_path"].startswith("http"):
+                                st.markdown(f"- [{label}]({src['file_path']})")
+                            else:
+                                st.markdown(f"- {label}")
+                iid = msg.get("interaction_id")
+                if iid is not None:
+                    _render_inline_feedback(iid, i)
 
     # Show example prompt buttons when chat is empty
     if not st.session_state.chat_history:
@@ -301,6 +411,7 @@ def chat_page():
         st.session_state.pending_prompt = None
 
     if user_input:
+        # Generate response
         with st.chat_message("user"):
             st.markdown(user_input)
 
@@ -312,28 +423,6 @@ def chat_page():
                     history_for_rag,
                     current_week=st.session_state.current_week,
                 )
-                st.markdown(response)
-
-                if sources:
-                    with st.expander("Sources referenced"):
-                        for src in sources:
-                            label = src["label"]
-                            resolved = resolve_file_path(src["file_path"])
-                            if resolved:
-                                fname = os.path.basename(resolved)
-                                with open(resolved, "rb") as f:
-                                    file_bytes = f.read()
-                                st.download_button(
-                                    label=f"Download: {label}",
-                                    data=file_bytes,
-                                    file_name=fname,
-                                    mime="application/pdf",
-                                    key=f"dl_{hash(resolved)}_{hash(user_input)}",
-                                )
-                            elif src["file_path"].startswith("http"):
-                                st.markdown(f"- [{label}]({src['file_path']})")
-                            else:
-                                st.markdown(f"- {label}")
 
         # Log interaction to DB
         source_labels = [s["label"] for s in sources]
@@ -346,9 +435,15 @@ def chat_page():
         )
         st.session_state.last_interaction_id = interaction_id
 
-        # Update chat history
+        # Update chat history (store interaction_id with assistant message)
         st.session_state.chat_history.append({"role": "user", "content": user_input})
-        st.session_state.chat_history.append({"role": "assistant", "content": response})
+        st.session_state.chat_history.append({
+            "role": "assistant",
+            "content": response,
+            "interaction_id": interaction_id,
+            "sources": sources,
+        })
+        st.rerun()
 
 
 def main():
@@ -403,7 +498,7 @@ def main():
         if cookie_data and "email" in cookie_data:
             email = cookie_data["email"]
             st.session_state.authenticated = True
-            st.session_state.student_id = email.split("@")[0] if "@" in email else email
+            st.session_state.student_id = _anon_student_id(cfg, email)
             st.session_state.student_email = email
             st.session_state.student_name = cookie_data.get("name", "")
     if "current_week" not in st.session_state:

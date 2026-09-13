@@ -43,6 +43,7 @@ def _init_db(conn):
             student_id TEXT NOT NULL,
             interaction_id INTEGER,
             rating INTEGER,
+            reason TEXT,
             comment TEXT,
             FOREIGN KEY (interaction_id) REFERENCES interactions(id)
         );
@@ -57,6 +58,13 @@ def _init_db(conn):
         );
     """)
     conn.commit()
+
+    # Migrations for existing databases
+    try:
+        conn.execute("SELECT reason FROM feedback LIMIT 0")
+    except sqlite3.OperationalError:
+        conn.execute("ALTER TABLE feedback ADD COLUMN reason TEXT")
+        conn.commit()
 
 
 # --- Interactions ---
@@ -116,12 +124,12 @@ def rate_interaction(interaction_id, rating):
 
 # --- Feedback ---
 
-def add_feedback(student_id, interaction_id, rating, comment):
+def add_feedback(student_id, interaction_id, rating, comment, reason=None):
     conn = get_conn()
     conn.execute(
-        "INSERT INTO feedback (timestamp, student_id, interaction_id, rating, comment) "
-        "VALUES (?, ?, ?, ?, ?)",
-        (datetime.now().isoformat(), student_id, interaction_id, rating, comment),
+        "INSERT INTO feedback (timestamp, student_id, interaction_id, rating, reason, comment) "
+        "VALUES (?, ?, ?, ?, ?, ?)",
+        (datetime.now().isoformat(), student_id, interaction_id, rating, reason, comment),
     )
     conn.commit()
     conn.close()

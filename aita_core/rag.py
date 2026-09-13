@@ -9,21 +9,13 @@ import re
 
 import numpy as np
 import faiss
-from openai import OpenAI
 
 from aita_core.config import get_config
+from aita_core import providers
 
 # Lazy-loaded state
-_client = None
 _index = None
 _chunks = None
-
-
-def _get_client():
-    global _client
-    if _client is None:
-        _client = OpenAI()
-    return _client
 
 
 def _load_index():
@@ -35,7 +27,7 @@ def _load_index():
             _chunks = pickle.load(f)
 
 
-FUTURE_TOPIC_INSTRUCTION = """
+WEEK_CONTEXT_INSTRUCTION = """
 IMPORTANT — WEEK-AWARE INSTRUCTION:
 The class is currently in Week {current_week}.
 {current_hw_line}
@@ -43,8 +35,8 @@ Topics covered so far: {covered_topics}
 
 Topics NOT yet covered: {future_topics}
 
-STRICT RULE — FUTURE TOPICS:
-If the student asks about a topic that has NOT been covered yet, you MUST:
+STRICT RULE — FUTURE LECTURE TOPICS:
+If the student asks about a lecture topic that has NOT been covered yet, you MUST:
 1. Say: "That's a great question! We'll cover that topic later in the course."
 2. Give AT MOST a one-sentence definition — no formulas, no numbers, no calculations.
 3. Do NOT provide specific values (like rates, speeds, constants) for future topics.
@@ -53,10 +45,25 @@ If the student asks about a topic that has NOT been covered yet, you MUST:
 This is an absolute rule. Even if you know the answer, do NOT provide detailed \
 information about future topics. Giving incorrect or premature information is worse \
 than redirecting the student.
+"""
 
-If the student asks about "this week's homework" or "the current homework", refer to {current_hw_ref}.
-If the student says "problem 1" or "problem 2" etc. without specifying which homework, \
-assume they mean {current_hw_ref} and use the retrieved context from that homework.
+HOMEWORK_POLICY_INSTRUCTION = """
+HOMEWORK POLICY:
+- Students ARE allowed to work ahead. If a student asks about a homework from any week, \
+help them with its concepts normally.
+- Each retrieved excerpt below is tagged with its source, e.g. "[Source: Homework: HW1.pdf]". \
+Treat those tags as the source of truth for which assignment a passage belongs to.
+- If the student names a problem WITHOUT saying which homework (e.g., "problem 2"), assume \
+they mean {current_hw_ref}; if they name a specific homework/lab by number, use that one.
+- CRITICAL — NEVER invent or guess what a problem asks. Only describe a specific problem's \
+contents if that problem's text is actually present in the retrieved excerpts below AND the \
+excerpt's source matches the homework/lab in question. If the problem is not in the excerpts, \
+or the only excerpts are from a DIFFERENT homework or lab than the one asked about, do NOT \
+summarize, paraphrase, or guess the problem. Instead tell the student you don't have that \
+specific problem's text and ask them to paste it. Never answer a question about one assignment \
+using a different assignment's problem (e.g., do not use HW2 or a Lab to describe a HW1 problem).
+- You may always help with the underlying concepts and methods even when you lack the exact \
+problem text — just don't fabricate what the assignment says.
 """
 
 EXAM_SCOPE_INSTRUCTION = """
@@ -82,33 +89,59 @@ accordingly. If unsure, tell the student: "I don't have course materials on this
 yet. Could you rephrase your question, or is this a topic we haven't covered?"
 """
 
+NO_CONTEXT_WARNING_GENERIC = """
+WARNING — NO COURSE MATERIALS RETRIEVED:
+No course materials were found matching this query. Do NOT provide detailed answers \
+from your own knowledge — they may be incorrect. Tell the student you don't have \
+course materials on this topic and ask them to rephrase their question.
+"""
+
+
+def _resolve_current_hw(cfg, current_week):
+    """The homework a student is most likely working on now.
+
+    Assignments are keyed by the week they're DUE, so early in a week students are
+    typically working on the next upcoming one (e.g. in week 1 they work on HW1,
+    which is due week 2). Prefer an exact week match, then the next upcoming HW,
+    then the most recent past one. Returns None if no HW schedule is configured.
+    """
+    week_to_hw = cfg.week_to_hw
+    if not week_to_hw:
+        return None
+    if current_week in week_to_hw:
+        return week_to_hw[current_week]
+    upcoming = [w for w in week_to_hw if w >= current_week]
+    if upcoming:
+        return week_to_hw[min(upcoming)]
+    past = [w for w in week_to_hw if w < current_week]
+    if past:
+        return week_to_hw[max(past)]
+    return None
+
 
 def build_system_prompt(current_week, has_context=True):
     """Build system prompt with week-awareness and exam scope."""
     cfg = get_config()
-    covered = cfg.get_topics_covered(current_week)
-    future = cfg.get_topics_not_covered(current_week)
 
-    week_to_hw = cfg.week_to_hw
-    current_hw = week_to_hw.get(current_week, None)
-    if not current_hw:
-        for w in range(current_week, 0, -1):
-            if w in week_to_hw:
-                current_hw = week_to_hw[w]
-                break
-    current_hw = current_hw or "the most recent homework"
+    current_hw = _resolve_current_hw(cfg, current_week) or "the most recent homework"
 
     current_hw_line = f"The current homework assignment is: {current_hw}"
     current_hw_ref = current_hw
 
     prompt = cfg.system_prompt
-    prompt += "\n\n" + FUTURE_TOPIC_INSTRUCTION.format(
-        current_week=current_week,
-        covered_topics=", ".join(covered),
-        future_topics=", ".join(future) if future else "None (all topics covered)",
-        current_hw_line=current_hw_line,
-        current_hw_ref=current_hw_ref,
-    )
+
+    # Week-gating (future-topic redirection) is optional per course.
+    if cfg.week_aware:
+        covered = cfg.get_topics_covered(current_week)
+        future = cfg.get_topics_not_covered(current_week)
+        prompt += "\n\n" + WEEK_CONTEXT_INSTRUCTION.format(
+            current_week=current_week,
+            covered_topics=", ".join(covered),
+            future_topics=", ".join(future) if future else "None (all topics covered)",
+            current_hw_line=current_hw_line,
+        )
+
+    prompt += "\n\n" + HOMEWORK_POLICY_INSTRUCTION.format(current_hw_ref=current_hw_ref)
 
     # Add exam scope if configured
     if cfg.exam_scope:
@@ -127,7 +160,7 @@ def build_system_prompt(current_week, has_context=True):
 
     # Warn when no context was retrieved
     if not has_context:
-        prompt += "\n\n" + NO_CONTEXT_WARNING
+        prompt += "\n\n" + (NO_CONTEXT_WARNING if cfg.week_aware else NO_CONTEXT_WARNING_GENERIC)
 
     return prompt
 
@@ -136,27 +169,32 @@ def retrieve(query, k=None, current_week=15):
     """Retrieve top-k relevant chunks, filtered to only topics covered by current_week."""
     _load_index()
     cfg = get_config()
-    client = _get_client()
     if k is None:
         k = cfg.retrieval_k
 
-    resp = client.embeddings.create(model=cfg.embedding_model, input=[query])
-    qvec = np.array([resp.data[0].embedding], dtype="float32")
+    qvec = providers.embed_texts(cfg, [query])
     faiss.normalize_L2(qvec)
 
     fetch_k = min(k * 4, _index.ntotal)
     scores, indices = _index.search(qvec, fetch_k)
 
+    min_score = getattr(cfg, "retrieval_min_score", 0.0)
     results = []
     for score, idx in zip(scores[0], indices[0]):
         if idx == -1:
             continue
+        if min_score and float(score) < min_score:
+            continue
         chunk_week = _chunks[idx]["metadata"].get("max_week", 1)
-        if chunk_week > current_week:
+        source_label = _chunks[idx]["metadata"].get("source_label", "")
+        # Homework content is always available (students can work ahead);
+        # lecture/topic content is gated by current week only when week_aware.
+        is_homework = "Homework" in source_label
+        if cfg.week_aware and not is_homework and chunk_week > current_week:
             continue
         results.append({
             "text": _chunks[idx]["text"],
-            "source": _chunks[idx]["metadata"]["source_label"],
+            "source": source_label,
             "file_path": _chunks[idx]["metadata"].get("source", ""),
             "score": float(score),
         })
@@ -166,8 +204,13 @@ def retrieve(query, k=None, current_week=15):
 
 
 def build_messages(chat_history, user_query, context_chunks, current_week):
-    """Build the message list for the OpenAI chat completion."""
-    context = "\n\n---\n\n".join(c["text"] for c in context_chunks)
+    """Build the OpenAI-style message list (converted per-provider downstream)."""
+    # Tag each excerpt with its source so the model can tell which assignment a
+    # passage belongs to (and refuse to answer from a mismatched homework/lab).
+    context = "\n\n---\n\n".join(
+        (f"[Source: {c['source']}]\n{c['text']}" if c.get("source") else c["text"])
+        for c in context_chunks
+    )
     system_prompt = build_system_prompt(
         current_week, has_context=bool(context_chunks),
     )
@@ -192,13 +235,7 @@ def _inject_current_hw(query, context_chunks, current_week):
     if not any(kw in query.lower() for kw in hw_keywords):
         return context_chunks
 
-    week_to_hw = cfg.week_to_hw
-    current_hw = week_to_hw.get(current_week)
-    if not current_hw:
-        for w in range(current_week, 0, -1):
-            if w in week_to_hw:
-                current_hw = week_to_hw[w]
-                break
+    current_hw = _resolve_current_hw(cfg, current_week)
     if not current_hw:
         return context_chunks
 
@@ -211,15 +248,13 @@ def _inject_current_hw(query, context_chunks, current_week):
     for i, chunk in enumerate(_chunks):
         label = chunk["metadata"].get("source_label", "")
         if current_hw in label and "Homework" in label:
-            chunk_week = chunk["metadata"].get("max_week", 1)
-            if chunk_week <= current_week:
-                context_chunks.insert(0, {
-                    "text": chunk["text"],
-                    "source": label,
-                    "file_path": chunk["metadata"].get("source", ""),
-                    "score": 1.0,
-                })
-                break
+            context_chunks.insert(0, {
+                "text": chunk["text"],
+                "source": label,
+                "file_path": chunk["metadata"].get("source", ""),
+                "score": 1.0,
+            })
+            break
     return context_chunks
 
 
@@ -307,7 +342,6 @@ def chat(user_query, chat_history=None, current_week=15):
     Returns (assistant_message, sources).
     """
     cfg = get_config()
-    client = _get_client()
     if chat_history is None:
         chat_history = []
 
@@ -323,11 +357,5 @@ def chat(user_query, chat_history=None, current_week=15):
             sources.append({"label": c["source"], "file_path": c["file_path"]})
 
     messages = build_messages(chat_history, user_query, context_chunks, current_week)
-    response = client.chat.completions.create(
-        model=cfg.llm_model,
-        messages=messages,
-        temperature=cfg.llm_temperature,
-    )
-
-    assistant_message = response.choices[0].message.content
+    assistant_message = providers.chat_complete(cfg, messages)
     return assistant_message, sources
