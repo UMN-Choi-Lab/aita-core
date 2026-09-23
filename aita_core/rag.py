@@ -239,7 +239,7 @@ def retrieve(query, k=None, current_week=15):
     scores, indices = _index.search(qvec, fetch_k)
 
     min_score = getattr(cfg, "retrieval_min_score", 0.0)
-    results = []
+    eligible = []  # every chunk that passes score + week gating, best first
     for score, idx in zip(scores[0], indices[0]):
         if idx == -1:
             continue
@@ -252,15 +252,46 @@ def retrieve(query, k=None, current_week=15):
         is_homework = "Homework" in source_label
         if cfg.week_aware and not is_homework and chunk_week > current_week:
             continue
-        results.append({
+        eligible.append((is_homework, {
             "text": _chunks[idx]["text"],
             "source": source_label,
             "file_path": _chunks[idx]["metadata"].get("source", ""),
             "score": float(score),
-        })
-        if len(results) >= k:
-            break
-    return results
+        }))
+    return [c for _, c in _balance_sources(eligible, k, cfg)]
+
+
+def _balance_sources(eligible, k, cfg):
+    """Choose k chunks from ``eligible`` (best first) per cfg.retrieval_source_balance.
+
+    A pasted problem statement is textually close to a homework problem statement,
+    so an embedding model can rank homework above the handout that explains the
+    method -- leaving the assistant with the question restated and nothing to teach
+    from. These rules keep conceptual material in the context window.
+    """
+    rule = getattr(cfg, "retrieval_source_balance", "") or ""
+    top = eligible[:k]
+    if rule == "guarantee":
+        # Only bites when EVERY selected chunk is homework: swap the weakest for
+        # the best conceptual chunk still above threshold.
+        if top and all(is_hw for is_hw, _ in top):
+            extra = next((e for e in eligible[k:] if not e[0]), None)
+            if extra is not None:
+                top = top[:k - 1] + [extra]
+        return top
+    if rule == "cap":
+        max_hw = getattr(cfg, "retrieval_max_homework", 2)
+        out, n_hw = [], 0
+        for is_hw, chunk in eligible:
+            if is_hw:
+                if n_hw >= max_hw:
+                    continue
+                n_hw += 1
+            out.append((is_hw, chunk))
+            if len(out) == k:
+                break
+        return out
+    return top
 
 
 def build_messages(chat_history, user_query, context_chunks, current_week):
@@ -399,7 +430,8 @@ def _inject_exam_review(query, context_chunks, current_week):
 def chat(user_query, chat_history=None, current_week=15):
     """
     Full RAG pipeline: retrieve context, build prompt, generate response.
-    Returns (assistant_message, sources).
+    Returns (assistant_message, sources, messages). ``messages`` is the exact
+    prompt that was sent, so a shadow model can be given the identical input.
     """
     cfg = get_config()
     if chat_history is None:
@@ -418,4 +450,4 @@ def chat(user_query, chat_history=None, current_week=15):
 
     messages = build_messages(chat_history, user_query, context_chunks, current_week)
     assistant_message = providers.chat_complete(cfg, messages)
-    return assistant_message, sources
+    return assistant_message, sources, messages

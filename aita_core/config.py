@@ -22,6 +22,7 @@ EDITABLE_FIELDS = [
     "llm_provider", "gcp_project", "gcp_location",
     "llm_model", "llm_temperature", "llm_max_output_tokens",
     "retrieval_k", "retrieval_min_score",
+    "retrieval_source_balance", "retrieval_max_homework",
     "chunk_size", "chunk_overlap", "embedding_model",
 ]
 
@@ -108,9 +109,20 @@ class CourseConfig:
     llm_model: str = "gpt-4o-mini"
     llm_temperature: float = 0
     llm_max_output_tokens: int = 0  # 0 = provider default (no explicit cap)
+    # Extra provider-specific params merged into the chat request. Needed for
+    # reasoning models served over the OpenAI protocol: gpt-5.6-luna rejects
+    # temperature=0 unless reasoning_effort resolves to "none".
+    llm_extra_params: dict = field(default_factory=dict)
     chunk_size: int = 2048
     chunk_overlap: int = 256
     retrieval_k: int = 5
+    # Source balance for retrieval. "" keeps pure score order. "guarantee" swaps the
+    # weakest chunk for the best conceptual one when the top-k are all homework;
+    # "cap" allows at most retrieval_max_homework homework chunks. Needed because
+    # a pasted problem statement is textually close to a homework problem statement,
+    # so an embedding model can return only homework and nothing to teach from.
+    retrieval_source_balance: str = ""
+    retrieval_max_homework: int = 2
     # Drop retrieved chunks whose cosine score is below this (0.0 = keep all).
     # Helps avoid showing irrelevant "sources" on off-topic / refusal turns.
     retrieval_min_score: float = 0.0

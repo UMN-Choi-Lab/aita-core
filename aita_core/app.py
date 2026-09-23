@@ -12,6 +12,7 @@ from streamlit.components.v1 import html as _st_html
 
 from aita_core.config import get_config
 from aita_core.rag import chat
+from aita_core import shadow
 from aita_core.db import log_interaction, rate_interaction, add_feedback, add_feature_request
 from aita_core.admin import admin_page, is_admin_user
 
@@ -418,7 +419,7 @@ def chat_page():
         with st.chat_message("assistant"):
             with st.spinner("Thinking..."):
                 history_for_rag = st.session_state.chat_history.copy()
-                response, sources = chat(
+                response, sources, messages = chat(
                     user_input,
                     history_for_rag,
                     current_week=st.session_state.current_week,
@@ -434,6 +435,11 @@ def chat_page():
             sources=source_labels,
         )
         st.session_state.last_interaction_id = interaction_id
+
+        # Candidate-model evaluation on real traffic. No-op unless
+        # AITA_SHADOW_MODEL is set; runs off-thread, so it cannot delay or
+        # break the student's turn either way.
+        shadow.fire(messages, interaction_id, response)
 
         # Update chat history (store interaction_id with assistant message)
         st.session_state.chat_history.append({"role": "user", "content": user_input})

@@ -16,7 +16,7 @@ def get_conn():
     cfg = get_config()
     db_path = os.path.join(cfg.data_dir, "aita.db")
     os.makedirs(os.path.dirname(db_path), exist_ok=True)
-    conn = sqlite3.connect(db_path)
+    conn = sqlite3.connect(db_path, timeout=30)
     conn.row_factory = sqlite3.Row
     if not _initialized:
         _init_db(conn)
@@ -55,6 +55,20 @@ def _init_db(conn):
             title TEXT NOT NULL,
             description TEXT,
             status TEXT DEFAULT 'open'
+        );
+
+        -- Replies from a candidate model, never shown to students. Written by
+        -- aita_core.shadow so a migration can be judged on real traffic.
+        CREATE TABLE IF NOT EXISTS shadow_interactions (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            interaction_id INTEGER,
+            timestamp TEXT NOT NULL,
+            model TEXT NOT NULL,
+            baseline_response TEXT,
+            shadow_response TEXT,
+            latency_ms INTEGER,
+            error TEXT,
+            FOREIGN KEY (interaction_id) REFERENCES interactions(id)
         );
     """)
     conn.commit()
