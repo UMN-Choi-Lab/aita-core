@@ -4,6 +4,7 @@ SQLite database for interaction logs, feedback, and feature requests.
 
 import sqlite3
 import os
+import statistics
 from datetime import datetime
 
 from aita_core.config import get_config
@@ -64,9 +65,11 @@ def _init_db(conn):
             interaction_id INTEGER,
             timestamp TEXT NOT NULL,
             model TEXT NOT NULL,
+            prompt_variant TEXT,
             baseline_response TEXT,
             shadow_response TEXT,
             latency_ms INTEGER,
+            baseline_latency_ms INTEGER,
             error TEXT,
             FOREIGN KEY (interaction_id) REFERENCES interactions(id)
         );
@@ -79,6 +82,15 @@ def _init_db(conn):
     except sqlite3.OperationalError:
         conn.execute("ALTER TABLE feedback ADD COLUMN reason TEXT")
         conn.commit()
+
+    # shadow_interactions shipped without these; the table already exists in prod.
+    for col, decl in (("prompt_variant", "TEXT"),
+                      ("baseline_latency_ms", "INTEGER")):
+        try:
+            conn.execute(f"SELECT {col} FROM shadow_interactions LIMIT 0")
+        except sqlite3.OperationalError:
+            conn.execute(f"ALTER TABLE shadow_interactions ADD COLUMN {col} {decl}")
+            conn.commit()
 
 
 # --- Interactions ---
@@ -248,3 +260,63 @@ def get_interaction_stats():
 
     conn.close()
     return stats
+
+
+# --- Shadow model ---
+
+def get_shadow_pairs(limit=50, errors_only=False):
+    """Recent shadow pairs, joined to the student turn that produced them."""
+    conn = get_conn()
+    where = "WHERE s.error IS NOT NULL" if errors_only else ""
+    rows = conn.execute(
+        f"""SELECT s.*, i.question, i.student_id, i.week, i.rating, i.sources
+            FROM shadow_interactions s
+            LEFT JOIN interactions i ON i.id = s.interaction_id
+            {where}
+            ORDER BY s.id DESC LIMIT ?""",
+        (limit,),
+    ).fetchall()
+    conn.close()
+    return [dict(r) for r in rows]
+
+
+def _median(values):
+    return round(statistics.median(values)) if values else None
+
+
+def get_shadow_stats():
+    """Descriptive comparison of every shadow pair logged so far.
+
+    Deliberately cheap and judge-free: length, latency, and whether the reply ends
+    on a question, which is the dimension the candidate model was weakest on.
+    """
+    conn = get_conn()
+    try:
+        rows = conn.execute(
+            "SELECT model, prompt_variant, latency_ms, baseline_latency_ms, error,"
+            " shadow_response, baseline_response FROM shadow_interactions"
+        ).fetchall()
+    except sqlite3.OperationalError:
+        rows = []
+    conn.close()
+
+    ok = [r for r in rows if not r["error"]]
+
+    def ends_q(col):
+        texts = [r[col] or "" for r in ok]
+        asked = sum(1 for t in texts if t.rstrip().endswith("?"))
+        return round(100 * asked / len(texts)) if texts else None
+
+    return {
+        "total": len(rows),
+        "errors": sum(1 for r in rows if r["error"]),
+        "models": sorted({r["model"] for r in rows}),
+        "variants": sorted({r["prompt_variant"] or "base" for r in rows}),
+        "shadow_ms": _median([r["latency_ms"] for r in ok if r["latency_ms"]]),
+        "baseline_ms": _median([r["baseline_latency_ms"] for r in ok
+                                if r["baseline_latency_ms"]]),
+        "shadow_chars": _median([len(r["shadow_response"] or "") for r in ok]),
+        "baseline_chars": _median([len(r["baseline_response"] or "") for r in ok]),
+        "shadow_ends_q": ends_q("shadow_response"),
+        "baseline_ends_q": ends_q("baseline_response"),
+    }

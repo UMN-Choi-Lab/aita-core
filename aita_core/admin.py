@@ -10,6 +10,7 @@ import pandas as pd
 from aita_core.db import (
     get_interaction_stats, get_interactions, get_feedback,
     get_feature_requests, update_feature_request_status,
+    get_shadow_pairs, get_shadow_stats,
 )
 from aita_core.config import get_config
 
@@ -77,6 +78,72 @@ def admin_login():
             st.error("Incorrect password.")
 
 
+def _render_shadow_tab(stats):
+    """Side-by-side view of the live model and the candidate running behind it."""
+    st.subheader("Shadow Model")
+    st.caption(
+        "A candidate model answers every turn with the same prompt the student's "
+        "turn produced. Students never see these replies -- they exist to judge a "
+        "migration on real traffic. Model(s): %s. Prompt: %s."
+        % (", ".join(stats["models"]) or "-", ", ".join(stats["variants"]) or "-")
+    )
+
+    c1, c2, c3, c4 = st.columns(4)
+    c1.metric("Pairs logged", stats["total"],
+              delta=f"-{stats['errors']} failed" if stats["errors"] else None,
+              delta_color="inverse" if stats["errors"] else "off")
+
+    def _pair(col, label, live, cand, unit="", lower_is_better=False):
+        """Show the candidate's value with the live model's as the reference."""
+        if cand is None or live is None:
+            col.metric(label, "n/a")
+            return
+        diff = cand - live
+        col.metric(f"{label} (shadow)", f"{cand}{unit}",
+                   delta=f"{diff:+}{unit} vs live",
+                   delta_color="inverse" if lower_is_better else "normal")
+
+    _pair(c2, "Latency", stats["baseline_ms"], stats["shadow_ms"], " ms",
+          lower_is_better=True)
+    _pair(c3, "Length", stats["baseline_chars"], stats["shadow_chars"], " ch")
+    _pair(c4, "Ends on a question", stats["baseline_ends_q"],
+          stats["shadow_ends_q"], "%")
+
+    if stats["baseline_ms"]:
+        st.caption(
+            "Live latency covers the whole turn including retrieval; the shadow "
+            "reuses that retrieval, so its figure is the model call alone."
+        )
+
+    col_a, col_b = st.columns(2)
+    errors_only = col_a.checkbox("Failures only", key="shadow_errors_only")
+    limit = col_b.selectbox("Show:", [25, 50, 100], key="shadow_limit")
+
+    pairs = get_shadow_pairs(limit=limit, errors_only=errors_only)
+    if not pairs:
+        st.info("No shadow pairs match.")
+        return
+
+    for sp in pairs:
+        flag = " | FAILED" if sp["error"] else ""
+        with st.expander(
+            f"#{sp['interaction_id']} | {sp['student_id'] or '?'} | "
+            f"Week {sp['week'] if sp['week'] is not None else '?'} | "
+            f"{_fmt_ct(sp['timestamp'])} | {sp['latency_ms']} ms{flag}"
+        ):
+            st.markdown("**Question:**")
+            st.markdown(sp["question"] or "_(the logged turn is gone)_")
+            if sp["error"]:
+                st.error(sp["error"])
+            left, right = st.columns(2)
+            with left:
+                st.markdown("**Live model** (what the student saw)")
+                st.markdown(sp["baseline_response"] or "_none_")
+            with right:
+                st.markdown(f"**{sp['model']}** (shadow, {sp['prompt_variant'] or 'base'})")
+                st.markdown(sp["shadow_response"] or "_none_")
+
+
 def admin_dashboard():
     st.title("AITA Admin Dashboard")
 
@@ -92,9 +159,14 @@ def admin_dashboard():
     st.markdown("---")
 
     # --- Tabs ---
-    tab_history, tab_feedback, tab_requests, tab_settings = st.tabs([
-        "Interaction History", "Feedback", "Feature Requests", "Course Settings",
-    ])
+    tabs = ["Interaction History", "Feedback", "Feature Requests", "Course Settings"]
+    shadow_stats = get_shadow_stats()
+    if shadow_stats["total"]:
+        tabs.insert(1, "Shadow Model")
+        tab_history, tab_shadow, tab_feedback, tab_requests, tab_settings = st.tabs(tabs)
+    else:
+        tab_shadow = None
+        tab_history, tab_feedback, tab_requests, tab_settings = st.tabs(tabs)
 
     # --- Interaction History ---
     with tab_history:
@@ -125,6 +197,11 @@ def admin_dashboard():
                     st.markdown(ix["response"])
                     if ix["sources"]:
                         st.markdown(f"**Sources:** {ix['sources']}")
+
+    # --- Shadow Model ---
+    if tab_shadow is not None:
+        with tab_shadow:
+            _render_shadow_tab(shadow_stats)
 
     # --- Feedback ---
     with tab_feedback:

@@ -5,6 +5,7 @@ Parameterized by CourseConfig — no course-specific strings hardcoded.
 
 import os
 import sys
+import time
 import hashlib
 import jwt
 import streamlit as st
@@ -419,11 +420,16 @@ def chat_page():
         with st.chat_message("assistant"):
             with st.spinner("Thinking..."):
                 history_for_rag = st.session_state.chat_history.copy()
+                _t0 = time.monotonic()
                 response, sources, messages = chat(
                     user_input,
                     history_for_rag,
                     current_week=st.session_state.current_week,
                 )
+                # Whole turn, retrieval included - what the student actually waited
+                # for. The shadow reuses this turn's context, so its own timing
+                # covers the model call alone.
+                baseline_ms = int((time.monotonic() - _t0) * 1000)
 
         # Log interaction to DB
         source_labels = [s["label"] for s in sources]
@@ -439,7 +445,7 @@ def chat_page():
         # Candidate-model evaluation on real traffic. No-op unless
         # AITA_SHADOW_MODEL is set; runs off-thread, so it cannot delay or
         # break the student's turn either way.
-        shadow.fire(messages, interaction_id, response)
+        shadow.fire(messages, interaction_id, response, baseline_ms)
 
         # Update chat history (store interaction_id with assistant message)
         st.session_state.chat_history.append({"role": "user", "content": user_input})
