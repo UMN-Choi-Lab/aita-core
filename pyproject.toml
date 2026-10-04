@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "aita-core"
-version = "0.7.4"
+version = "0.7.5"
 description = "Shared core for AI Teaching Assistant (AITA) chatbots"
 readme = "README.md"
 requires-python = ">=3.11"

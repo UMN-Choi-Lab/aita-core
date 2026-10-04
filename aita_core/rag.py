@@ -464,11 +464,59 @@ def _inject_exam_review(query, context_chunks, current_week):
     return context_chunks
 
 
-def gather_context(user_query, current_week=15):
-    """Every chunk chat() puts in front of the model: retrieved, then homework, then exam."""
-    context_chunks = retrieve(user_query, current_week=current_week)
-    context_chunks = _inject_hw(user_query, context_chunks, current_week)
-    return _inject_exam_review(user_query, context_chunks, current_week)
+REWRITE_PROMPT = """You turn a student's latest chat message into a standalone search query \
+for a search over the course materials.
+Use the conversation only to resolve what the message refers to ("the second", "that", "it", \
+"part b", "task 2", "how do i do that").
+Keep the course's own words: homework and lab numbers (HW02, Lab 04), task and part numbers, \
+function and method names, and any numbers the student typed.
+If the message already stands on its own, return it unchanged. If it is a greeting, thanks, or \
+has nothing to look up, return it unchanged.
+Return only the query, on one line, with no quotes and no explanation."""
+
+
+def _standalone_query(user_query, chat_history, turns=4):
+    """The search query for this turn: a follow-up rewritten to stand alone.
+
+    "the second", "how do i do that", "show me" carry nothing to search for: their
+    referent is in the previous turn. Embedded bare, they retrieved nothing and the
+    model answered from memory (90 of 98 such turns on 3101). One short LLM call
+    resolves the reference. Any failure falls back to the student's own words.
+    """
+    if not chat_history:
+        return user_query
+    lines = []
+    for m in chat_history[-turns:]:
+        text = " ".join(str(m.get("content", "")).split())
+        if m.get("role") == "assistant":
+            lines.append("Assistant: " + text[-600:])     # its closing question is the referent
+        else:
+            lines.append("Student: " + text[:400])
+    prompt = ("Conversation so far:\n" + "\n".join(lines)
+              + f"\n\nLatest message: {user_query}\n\nStandalone query:")
+    try:
+        out = providers.chat_complete(get_config(), [
+            {"role": "system", "content": REWRITE_PROMPT},
+            {"role": "user", "content": prompt}])
+    except Exception:
+        return user_query                 # a failed rewrite must not fail the turn
+    out = " ".join((out or "").split()).strip("\"'")
+    if (not out or len(out) > 300
+            or out in (providers._HIGH_DEMAND_MSG, providers._NO_RESPONSE_MSG)):
+        return user_query
+    return out
+
+
+def gather_context(user_query, current_week=15, chat_history=None):
+    """Every chunk chat() puts in front of the model: retrieved, then homework, then exam.
+
+    Retrieval runs on the standalone form of a follow-up; the model still sees
+    the student's own words.
+    """
+    query = _standalone_query(user_query, chat_history)
+    context_chunks = retrieve(query, current_week=current_week)
+    context_chunks = _inject_hw(query, context_chunks, current_week)
+    return _inject_exam_review(query, context_chunks, current_week)
 
 
 def chat(user_query, chat_history=None, current_week=15):
@@ -481,7 +529,8 @@ def chat(user_query, chat_history=None, current_week=15):
     if chat_history is None:
         chat_history = []
 
-    context_chunks = gather_context(user_query, current_week=current_week)
+    context_chunks = gather_context(user_query, current_week=current_week,
+                                    chat_history=chat_history)
 
     seen = set()
     sources = []
