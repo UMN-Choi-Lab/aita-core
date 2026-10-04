@@ -3,6 +3,7 @@ RAG pipeline for AITA.
 No LangChain — just openai + faiss directly.
 """
 
+import functools
 import os
 import pickle
 import re
@@ -225,6 +226,18 @@ def build_system_prompt(current_week, has_context=True):
     return prompt
 
 
+@functools.lru_cache(maxsize=256)
+def _embed_cached(query):
+    qvec = providers.embed_texts(get_config(), [query])
+    faiss.normalize_L2(qvec)
+    return qvec
+
+
+def _embed_query(query):
+    """Unit-length query vector; one embedding call per distinct query."""
+    return _embed_cached(query).copy()
+
+
 def retrieve(query, k=None, current_week=15):
     """Retrieve top-k relevant chunks, filtered to only topics covered by current_week."""
     _load_index()
@@ -232,8 +245,7 @@ def retrieve(query, k=None, current_week=15):
     if k is None:
         k = cfg.retrieval_k
 
-    qvec = providers.embed_texts(cfg, [query])
-    faiss.normalize_L2(qvec)
+    qvec = _embed_query(query)
 
     fetch_k = min(k * 4, _index.ntotal)
     scores, indices = _index.search(qvec, fetch_k)
@@ -318,35 +330,60 @@ def build_messages(chat_history, user_query, context_chunks, current_week):
     return messages
 
 
-def _inject_current_hw(query, context_chunks, current_week):
-    """If the query mentions homework, ensure the current HW is in retrieved chunks."""
+_HW_IN_QUERY = re.compile(r"\b(?:hw|homework|assignment)\s*#?\s*0*(\d{1,2})\b", re.I)
+_HW_IN_LABEL = re.compile(r"hw\s*0*(\d{1,2})", re.I)
+HW_KEYWORDS = ["homework", "hw", "assignment", "this week's hw", "current hw"]
+
+
+def _hw_number(label):
+    """Homework number of a source label: "Homework: hw02.pdf" and "Homework: HW2.pdf"
+    are both 2; not a homework -> None. By number, so HW1 never matches HW10."""
+    if "Homework" not in label:
+        return None
+    m = _HW_IN_LABEL.search(label.split(":", 1)[-1])
+    return int(m.group(1)) if m else None
+
+
+def _hw_chunks(query, num, n):
+    """The n chunks of homework ``num`` closest to the query, best first."""
+    q = _embed_query(query)[0]
+    scored = sorted(((float(_index.reconstruct(i) @ q), i) for i, ch in enumerate(_chunks)
+                     if _hw_number(ch["metadata"].get("source_label", "")) == num),
+                    reverse=True)
+    return [{"text": _chunks[i]["text"],
+             "source": _chunks[i]["metadata"].get("source_label", ""),
+             "file_path": _chunks[i]["metadata"].get("source", ""),
+             "score": score} for score, i in scored[:n]]
+
+
+def _inject_hw(query, context_chunks, current_week, n=2):
+    """Make sure the homework the student means is in the context.
+
+    A query naming "HW02", "hw 2" or "homework 2" gets that assignment's n
+    closest chunks, and chunks from homework it did not name are dropped: an
+    embedding barely tells HW00 from HW02, and a passage from the wrong
+    assignment is worse than none. A bare "homework" means the current one.
+    """
     _load_index()
-    cfg = get_config()
-    hw_keywords = ["homework", "hw", "assignment", "this week's hw", "current hw"]
-    if not any(kw in query.lower() for kw in hw_keywords):
+    named = {int(x) for x in _HW_IN_QUERY.findall(query)}
+    if named:
+        context_chunks = [c for c in context_chunks
+                          if _hw_number(c.get("source", "")) in named | {None}]
+        nums = named
+    elif any(kw in query.lower() for kw in HW_KEYWORDS):
+        m = _HW_IN_LABEL.search(_resolve_current_hw(get_config(), current_week) or "")
+        if not m:
+            return context_chunks
+        nums = {int(m.group(1))}
+    else:
         return context_chunks
 
-    current_hw = _resolve_current_hw(cfg, current_week)
-    if not current_hw:
-        return context_chunks
-
-    # Check if current HW is already in results
-    hw_label = f"Homework: {current_hw}.pdf"
-    if any(hw_label in c.get("source", "") for c in context_chunks):
-        return context_chunks
-
-    # Find and inject the first chunk from the current HW
-    for i, chunk in enumerate(_chunks):
-        label = chunk["metadata"].get("source_label", "")
-        if current_hw in label and "Homework" in label:
-            context_chunks.insert(0, {
-                "text": chunk["text"],
-                "source": label,
-                "file_path": chunk["metadata"].get("source", ""),
-                "score": 1.0,
-            })
-            break
-    return context_chunks
+    have = {c["text"] for c in context_chunks}
+    extra = []
+    for num in sorted(nums):
+        held = sum(_hw_number(c.get("source", "")) == num for c in context_chunks)
+        extra += [c for c in _hw_chunks(query, num, n) if c["text"] not in have][:max(0, n - held)]
+    return extra + context_chunks
 
 
 def _identify_exam(query_lower, cfg):
@@ -427,6 +464,13 @@ def _inject_exam_review(query, context_chunks, current_week):
     return context_chunks
 
 
+def gather_context(user_query, current_week=15):
+    """Every chunk chat() puts in front of the model: retrieved, then homework, then exam."""
+    context_chunks = retrieve(user_query, current_week=current_week)
+    context_chunks = _inject_hw(user_query, context_chunks, current_week)
+    return _inject_exam_review(user_query, context_chunks, current_week)
+
+
 def chat(user_query, chat_history=None, current_week=15):
     """
     Full RAG pipeline: retrieve context, build prompt, generate response.
@@ -437,9 +481,7 @@ def chat(user_query, chat_history=None, current_week=15):
     if chat_history is None:
         chat_history = []
 
-    context_chunks = retrieve(user_query, current_week=current_week)
-    context_chunks = _inject_current_hw(user_query, context_chunks, current_week)
-    context_chunks = _inject_exam_review(user_query, context_chunks, current_week)
+    context_chunks = gather_context(user_query, current_week=current_week)
 
     seen = set()
     sources = []

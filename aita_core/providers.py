@@ -287,8 +287,8 @@ def _gemini_embed(cfg, texts):
         batch = texts[i:i + _GEMINI_EMBED_BATCH]
         print(f"  Embedding batch {i // _GEMINI_EMBED_BATCH + 1}/{n_batches} "
               f"({len(batch)} chunks)")
-        resp = client.models.embed_content(
+        resp = _call_with_backoff(lambda: client.models.embed_content(
             model=cfg.embedding_model, contents=batch, config=embed_cfg,
-        )
+        ))  # a dropped Vertex read used to abort a whole re-index
         out.extend(e.values for e in resp.embeddings)
     return np.array(out, dtype="float32")
