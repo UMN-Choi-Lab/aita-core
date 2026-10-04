@@ -41,7 +41,7 @@ def test_rewrite_sees_the_assistant_question():
 
 def test_failures_fall_back():
     for reply in (RuntimeError("vertex down"), "", providers._NO_RESPONSE_MSG,
-                  providers._HIGH_DEMAND_MSG, "x" * 301):
+                  providers._HIGH_DEMAND_MSG, providers._FILTERED_MSG, "x" * 301):
         _llm(reply)
         assert rag._standalone_query("the second", HISTORY) == "the second", reply
 

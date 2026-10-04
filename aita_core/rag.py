@@ -502,7 +502,8 @@ def _standalone_query(user_query, chat_history, turns=4):
         return user_query                 # a failed rewrite must not fail the turn
     out = " ".join((out or "").split()).strip("\"'")
     if (not out or len(out) > 300
-            or out in (providers._HIGH_DEMAND_MSG, providers._NO_RESPONSE_MSG)):
+            or out in (providers._HIGH_DEMAND_MSG, providers._NO_RESPONSE_MSG,
+                       providers._FILTERED_MSG)):            # the OpenAI path's refusal
         return user_query
     return out
 
