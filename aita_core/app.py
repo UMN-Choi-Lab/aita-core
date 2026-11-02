@@ -87,7 +87,8 @@ def _google_oauth_flow():
                "https://www.googleapis.com/auth/userinfo.email"]
 
     auth_code = st.query_params.get("code")
-    print(f"[OAUTH] code={'YES' if auth_code else 'NO'}, verifier={'YES' if oauth_store.code_verifier else 'NO'}", file=sys.stderr, flush=True)
+    state = st.query_params.get("state")
+    print(f"[OAUTH] code={'YES' if auth_code else 'NO'}, verifier={'YES' if state in oauth_store.verifiers else 'NO'}", file=sys.stderr, flush=True)
 
     if auth_code:
         if st.session_state.get("_oauth_exchanging"):
@@ -99,7 +100,7 @@ def _google_oauth_flow():
                 cfg.google_client_secret_file, scopes=_scopes,
                 redirect_uri=cfg.redirect_uri,
             )
-            flow.code_verifier = oauth_store.code_verifier
+            flow.code_verifier = oauth_store.pop(state)
             flow.fetch_token(code=auth_code)
 
             creds = flow.credentials
@@ -125,25 +126,24 @@ def _google_oauth_flow():
                 "email": email,
             }
             st.session_state.pop("_oauth_exchanging", None)
-            oauth_store.code_verifier = None
             print(f"[OAUTH] SUCCESS: {email}", file=sys.stderr, flush=True)
             st.rerun()
         except Exception as e:
             print(f"[OAUTH] Exception: {e}", file=sys.stderr, flush=True)
             st.session_state.pop("_oauth_exchanging", None)
-            oauth_store.code_verifier = None
+            st.query_params.clear()
             st.rerun()
     else:
         flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
             cfg.google_client_secret_file, scopes=_scopes,
             redirect_uri=cfg.redirect_uri,
         )
-        auth_url, _ = flow.authorization_url(
+        auth_url, state = flow.authorization_url(
             access_type="offline",
             include_granted_scopes="true",
             prompt="select_account",
         )
-        oauth_store.code_verifier = flow.code_verifier
+        oauth_store.put(state, flow.code_verifier)
         print(f"[OAUTH] Auth URL generated, verifier stored: {flow.code_verifier[:10]}..." if flow.code_verifier else "[OAUTH] No verifier", file=sys.stderr, flush=True)
 
         st.markdown(f"""
